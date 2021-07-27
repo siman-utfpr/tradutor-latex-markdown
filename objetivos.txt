@@ -1,0 +1,61 @@
+Cabeçalhos com tamanhos diferentes: 
+  h1 -> h6
+    #, ##, ### ...
+
+Enfâse: itálico, negrito, combinação entre os dois
+  Itálico: *texto* ou _texto_
+  Negrito: **texto** ou __texto__
+  Combinação: **_texto_**
+
+Lista não ordenada
+  * item 1
+  * item 2
+  * item 3
+  ou
+  - item 1
+  ou 
+  + item 1
+
+Lista ordenada
+  1. item 1
+  1. item 2
+  1. item 3
+    1. item 3.1
+  OU 
+  1. item 1
+  2. item 2
+
+Imagem
+  ![Texto alternativo](caminho "legenda")
+
+Link
+  [Texto alvo](link "titulo")
+  ou 
+  <link puro>
+
+Citação
+> citação 1
+>> sub-citação
+
+Tabela 
+  | Left columns  | Right columns |
+  | ------------- |:-------------:|
+  | left foo      | right foo     |
+  | left bar      | right bar     |
+  | left baz      | right baz     |
+
+Bloco de código
+```
+let texto = "exemplo";
+console.log(texto);
+```
+
+Código na linha
+Texto exemplo `código`
+
+Linha
+  ---
+
+Caracter de escape
+  \
+  Caracteres escapados: \ ` * - { } [ ] ( ) # + - . !

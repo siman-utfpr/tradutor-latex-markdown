@@ -1,4 +1,5 @@
 !*.*
 !Makefile
+!LICENSE
 *.lex.*
 *.tab.*

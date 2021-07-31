@@ -1,5 +1,7 @@
 %option noyywrap
 %{
+#include "tradutor.h"
+#include "tradutor.tab.h"
 #include <stdio.h>
 #include <stdlib.h>
 %}
@@ -17,18 +19,10 @@ DATA   \\date\{([a-zA-Z" "0-9/-]+)\}
 %%
 
 {CLASSE} {printf("Classe: %s\n", yytext);}
-{PACOTE} {printf("Pacote: %s\n", yytext);}
+{PACOTE} {printf("Pacote: %s\n", yytext); }
 {TITULO} {printf("Titulo: %s\n", yytext);}
 {AUTOR} {printf("Autor: %s\n", yytext);}
 {DATA} {printf("Data: %s\n", yytext);}
 . {printf("Não reconhecido: %s\n", yytext);}
 
 %%
-
-int main(int argc, char* argv[]){
-  FILE *arquivoEntrada;
-  arquivoEntrada = fopen(argv[1], "r");
-  yyrestart(arquivoEntrada);
-  yylex();
-  return 0;
-}

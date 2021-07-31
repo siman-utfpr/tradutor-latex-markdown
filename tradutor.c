@@ -25,6 +25,11 @@ char* extrairConteudo(char* entrada) {
   char* resultadoFiltrado = malloc(sizeof entrada);
   resultado = strtok(NULL, "{");
   strncpy(resultadoFiltrado, resultado, strlen(resultado) - 1);
-  //printf("%s\n", resultadoFiltrado);
+  //printf("Resultado filtrado: %s\n", resultadoFiltrado);
   return resultadoFiltrado;
+}
+
+void salvarConteudo(char** yylval, char* yytext) {
+  *yylval = strdup(yytext);
+  strcpy(*yylval, extrairConteudo(yytext));
 }

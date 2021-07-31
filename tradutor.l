@@ -4,6 +4,7 @@
 #include "tradutor.tab.h"
 #include <stdio.h>
 #include <stdlib.h>
+
 %}
 
 CLASSE \\documentclass(\[.*\])?\{[a-zA-Z]+\}
@@ -18,11 +19,11 @@ DATA   \\date\{([a-zA-Z" "0-9/-]+)\}
 
 %%
 
-{CLASSE} {printf("Classe: %s\n", yytext);}
-{PACOTE} {yylval.conteudo = strdup(yytext); strcpy(yylval.conteudo, extrairConteudo(yytext)); return PACOTE;}
-{TITULO} {printf("Titulo: %s\n", yytext);}
-{AUTOR} {printf("Autor: %s\n", yytext);}
-{DATA} {printf("Data: %s\n", yytext);}
+{CLASSE} {salvarConteudo(&yylval.conteudo, yytext); return CLASSE;}
+{PACOTE} { salvarConteudo(&yylval.conteudo, yytext); return PACOTE;}
+{TITULO} {salvarConteudo(&yylval.conteudo, yytext); return TITULO;}
+{AUTOR} {salvarConteudo(&yylval.conteudo, yytext); return AUTOR;}
+{DATA} {salvarConteudo(&yylval.conteudo, yytext); return DATA;}
 . {printf("Não reconhecido: %s\n", yytext); }
 
 %%

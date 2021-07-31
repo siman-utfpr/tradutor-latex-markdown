@@ -1,8 +1,10 @@
 %option noyywrap
 %{
+#include <stdio.h>
+#include <stdlib.h>
 %}
 
-CLASSE \\documentclass\{[a-zA-Z]+\}
+CLASSE \\documentclass(\[.*\])?\{[a-zA-Z]+\}
 
 PACOTE \\usepackage(\[.*\])?\{[a-zA-Z0-9-]+\}
 
@@ -23,7 +25,10 @@ DATA   \\date\{([a-zA-Z" "0-9/-]+)\}
 
 %%
 
-int main(){
+int main(int argc, char* argv[]){
+  FILE *arquivoEntrada;
+  arquivoEntrada = fopen(argv[1], "r");
+  yyrestart(arquivoEntrada);
   yylex();
   return 0;
 }

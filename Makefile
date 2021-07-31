@@ -1,4 +1,5 @@
-tradutor: tradutor.l
+tradutor: tradutor.l tradutor.y tradutor.h
+	bison -d tradutor.y
 	flex -o tradutor.lex.c tradutor.l 
-	gcc tradutor.lex.c -lfl -o tradutor
+	gcc tradutor.tab.c tradutor.lex.c tradutor.c -lfl -o $@
 	@echo Concluído...

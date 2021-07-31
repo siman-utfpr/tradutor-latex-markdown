@@ -19,10 +19,10 @@ DATA   \\date\{([a-zA-Z" "0-9/-]+)\}
 %%
 
 {CLASSE} {printf("Classe: %s\n", yytext);}
-{PACOTE} {printf("Pacote: %s\n", yytext); }
+{PACOTE} {yylval.conteudo = strdup(yytext); strcpy(yylval.conteudo, extrairConteudo(yytext)); return PACOTE;}
 {TITULO} {printf("Titulo: %s\n", yytext);}
 {AUTOR} {printf("Autor: %s\n", yytext);}
 {DATA} {printf("Data: %s\n", yytext);}
-. {printf("Não reconhecido: %s\n", yytext);}
+. {printf("Não reconhecido: %s\n", yytext); }
 
 %%

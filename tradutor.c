@@ -19,3 +19,12 @@ void yyerror(char* s, ...) {
   fprintf(stderr, "%d: error: ", yylineno);
   fprintf(stderr, "\n");
 }
+
+char* extrairConteudo(char* entrada) {
+  char* resultado = strtok(entrada, "{");
+  char* resultadoFiltrado = malloc(sizeof entrada);
+  resultado = strtok(NULL, "{");
+  strncpy(resultadoFiltrado, resultado, strlen(resultado) - 1);
+  //printf("%s\n", resultadoFiltrado);
+  return resultadoFiltrado;
+}

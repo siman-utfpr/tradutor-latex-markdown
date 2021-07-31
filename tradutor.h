@@ -1,4 +1,4 @@
 extern int yylineno;
 
-char *separarTagConteudo(char *);
+char *extrairConteudo(char *);
 void yyerror(char *s, ...);

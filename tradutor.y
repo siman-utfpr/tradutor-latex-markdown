@@ -7,15 +7,19 @@ int yylex();
 %}
 
 %union{
-  char *tag; 
   char *conteudo;
 }
 
-%token PACOTE
+%token <conteudo> PACOTE AUTOR DATA TITULO CLASSE
 
 %%
 
-pacote: 
+pacotes: 
+  | pacotes PACOTE{
+  printf("Nome do pacote: %s\n", $2);
+}
   ;
+
+
 
 %%

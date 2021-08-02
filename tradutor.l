@@ -18,7 +18,15 @@ NOME   [a-zA-Z0-9" "]+
 
 INICIO \\begin\{document\}
 
+FIM \\end\{document\}
+
+CAPITULO \\chapter
+
 PARAGRAFO \\paragraph
+
+SECAO \\section
+
+SUBSECAO \\subsection
 
 CONTEUDO [a-zA-Z0-9 \n]+
 
@@ -26,19 +34,22 @@ CLASSE \\documentclass(\[.*\])?\{[a-zA-Z]+\}
 
 PACOTE \\usepackage(\[.*\])?\{[a-zA-Z0-9-]+\}
 
-TITULO \\title\{[a-zA-Z0-9" "-]+\}
+TITULO \\title
 
 AUTOR  \\author\{[a-zA-Z0-9" "]+\}
 
 DATA   \\date\{([a-zA-Z" "0-9/-]+)\}
 
-
-
 %%
 
 \n {}
 {INICIO} {return INICIO;}
+{FIM} {return FIM;}
+{CAPITULO} {return CAPITULO;}
+{SECAO} {return SECAO;}
+{SUBSECAO} {return SUBSECAO;}
 {PARAGRAFO} {return PARAGRAFO;}
+{TITULO} {return TITULO;}
 {CONTEUDO} {salvarConteudo(&yylval.conteudo, yytext); return CONTEUDO;}
 "{" |
 "}" {return yytext[0];}

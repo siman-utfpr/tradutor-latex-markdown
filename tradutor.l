@@ -9,13 +9,18 @@
 {PACOTE} { salvarConteudo(&yylval.conteudo, yytext); return PACOTE;}
 {TITULO} {salvarConteudo(&yylval.conteudo, yytext); return TITULO;}
 {AUTOR} {salvarConteudo(&yylval.conteudo, yytext); return AUTOR;}
-{DATA} {salvarConteudo(&yylval.conteudo, yytext); return DATA;} */
+{DATA} {salvarConteudo(&yylval.conteudo, yytext); return DATA;} 
+NOME   [a-zA-Z0-9" "]+
+{NOME}     {return NOME;}
+*/
 
 %}
 
 INICIO \\begin\{document\}
 
 PARAGRAFO \\paragraph
+
+CONTEUDO [a-zA-Z0-9 \n]+
 
 CLASSE \\documentclass(\[.*\])?\{[a-zA-Z]+\}
 
@@ -27,18 +32,16 @@ AUTOR  \\author\{[a-zA-Z0-9" "]+\}
 
 DATA   \\date\{([a-zA-Z" "0-9/-]+)\}
 
-NOME   [a-zA-Z0-9" "]+
 
-CONTEUDO [a-zA-Z0-9" ""\n"]+
 
 %%
 
+\n {}
 {INICIO} {return INICIO;}
 {PARAGRAFO} {return PARAGRAFO;}
-"{"  |
-"}"      {return yytext[0];}
-{NOME}     {return NOME;}
 {CONTEUDO} {salvarConteudo(&yylval.conteudo, yytext); return CONTEUDO;}
+"{" |
+"}" {return yytext[0];}
 . {printf("Não reconhecido: %s\n", yytext); }
 
 %%

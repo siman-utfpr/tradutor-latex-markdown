@@ -31,5 +31,5 @@ char* extrairConteudo(char* entrada) {
 
 void salvarConteudo(char** yylval, char* yytext) {
   *yylval = strdup(yytext);
-  strcpy(*yylval, extrairConteudo(yytext));
+  strcpy(*yylval, yytext);
 }

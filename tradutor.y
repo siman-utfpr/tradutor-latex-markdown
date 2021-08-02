@@ -12,37 +12,23 @@ int numeroAutores = 0;
   char *conteudo;
 }
 
-%token <conteudo> PACOTE AUTOR DATA TITULO CLASSE
-%type <conteudo> classe autores data titulo
+%token PARAGRAFO
+%token <conteudo> INICIO NOME CONTEUDO
+//%type <conteudo> classe autores data titulo
 
-%start metadados
 %%
 
-pacotes: {printf("Lista de pacotes utilizados: "); }
-  | pacotes PACOTE{
-  printf("    Nome do pacote: %s", $2);
-  }
+documento: inicio texto
+  | inicio
   ;
 
-classe: 
-  | CLASSE {printf("Classe = %s\n", $1);}
+inicio: INICIO {
+  printf("Início do documento!!!!\n");
+}
   ;
 
-autores: {printf("Lista de autores: "); }
-  | autores AUTOR { printf("    Nome do autor: %s", $2);}
-  ;
-
-data: 
-  | DATA {printf("Data = %s\n", $1);}
-  ;
-
-titulo:
-  | TITULO {printf("Título = %s\n", $1);}
-  ;
-
-metadados: 
-  | classe pacotes titulo autores data {
-  
-  }
+texto: PARAGRAFO '{' CONTEUDO '}' {
+  printf("Parágrafo: %s\n", $3);
+}
   ;
 %%

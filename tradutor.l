@@ -5,7 +5,17 @@
 #include <stdio.h>
 #include <stdlib.h>
 
+/* {CLASSE} {salvarConteudo(&yylval.conteudo, yytext); return CLASSE;}
+{PACOTE} { salvarConteudo(&yylval.conteudo, yytext); return PACOTE;}
+{TITULO} {salvarConteudo(&yylval.conteudo, yytext); return TITULO;}
+{AUTOR} {salvarConteudo(&yylval.conteudo, yytext); return AUTOR;}
+{DATA} {salvarConteudo(&yylval.conteudo, yytext); return DATA;} */
+
 %}
+
+INICIO \\begin\{document\}
+
+PARAGRAFO \\paragraph
 
 CLASSE \\documentclass(\[.*\])?\{[a-zA-Z]+\}
 
@@ -21,31 +31,14 @@ NOME   [a-zA-Z0-9" "]+
 
 CONTEUDO [a-zA-Z0-9" ""\n"]+
 
-
 %%
 
-{CLASSE} {salvarConteudo(&yylval.conteudo, yytext); return CLASSE;}
-{PACOTE} { salvarConteudo(&yylval.conteudo, yytext); return PACOTE;}
-{TITULO} {salvarConteudo(&yylval.conteudo, yytext); return TITULO;}
-{AUTOR} {salvarConteudo(&yylval.conteudo, yytext); return AUTOR;}
-{DATA} {salvarConteudo(&yylval.conteudo, yytext); return DATA;}
-"\begin"      |
-"\end"        |
-"{"           |
-"}"           |
-"\chapter"    |
-"\section"    |
-"\subsection" |
-"\paragraph"  |
-"\bf"         |
-"\underline"  |
-"\it"         |
-"enumerate"   |
-"document"    |
-"itemize"     |
-"\item"       {return yytext;}
+{INICIO} {return INICIO;}
+{PARAGRAFO} {return PARAGRAFO;}
+"{"  |
+"}"      {return yytext[0];}
 {NOME}     {return NOME;}
-{CONTEUDO} {return CONTEUDO;}
+{CONTEUDO} {salvarConteudo(&yylval.conteudo, yytext); return CONTEUDO;}
 . {printf("Não reconhecido: %s\n", yytext); }
 
 %%

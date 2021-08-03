@@ -2,10 +2,9 @@
 #include "tradutor.h"
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 
 int yylex();
-int numeroPacotes = 0;
-int numeroAutores = 0;
 %}
 
 %union{
@@ -15,6 +14,8 @@ int numeroAutores = 0;
 %token PARAGRAFO TITULO INICIO FIM CAPITULO SECAO SUBSECAO
 %token <conteudo>  CONTEUDO
 %start documento
+
+%type <conteudo> secao capitulo subsecao corpo texto
 %%
 
 documento: configuracoes principal
@@ -36,28 +37,33 @@ inicio: INICIO {
 }
   ;
 
-corpoLista: capitulo secao subsecao corpoLista
-  | corpo
-  ;
-
-capitulo: CAPITULO '{' CONTEUDO '}' corpo capitulo {printf("##%s\n", $3);}
- | CAPITULO '{' CONTEUDO '}' {printf("##%s\n", $3);}
- ;
-
-secao: SECAO '{' CONTEUDO '}' corpo secao {printf("###%s\n", $3);}
-  | corpo  {printf("seção\n");}
-  ;
-
-subsecao: SUBSECAO '{'CONTEUDO '}' corpo subsecao {printf("####%s\n", $3);}
+corpoLista: 
+  | capitulo secao subsecao corpoLista {printf("%s\n--%s\n----%s\n", $1, $2, $3);}
   | corpo 
   ;
 
-corpo: texto
- | texto corpo
+capitulo: 
+ | CAPITULO '{' CONTEUDO '}' corpo capitulo {$$ = $3; strcat($$, "\n"); strcat($$, $5);}
+ | CAPITULO '{' CONTEUDO '}'
+ ;
+
+secao: {$$ = "";}
+  | SECAO '{' CONTEUDO '}' corpo secao { $$ = $3; strcat($$, "\n"); strcat($$, $5);}
+  | corpo
+  ;
+
+subsecao: {$$ = "";}
+  | SUBSECAO '{'CONTEUDO '}' corpo subsecao { $$ = $3; strcat($$, "\n"); strcat($$, $5);}
+  | corpo subsecao {}
+  ;
+
+corpo: texto {$$ = $1;}
+ | texto corpo {strcat($$, "\n");strcat($$, $2);}
  ;
 
 texto: PARAGRAFO '{' CONTEUDO '}' {
-  printf("Parágrafo: %s\n", $3);
+  $$ = $3;
+  //printf("Parágrafo: %s\n", $3);
 }
   ;
 

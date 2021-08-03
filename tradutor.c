@@ -1,5 +1,6 @@
 #include "tradutor.h"
 
+#include <stdarg.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -16,7 +17,11 @@ int main(int argc, char* argv[]) {
 }
 
 void yyerror(char* s, ...) {
+  va_list ap;
+  va_start(ap, s);
+
   fprintf(stderr, "%d: error: ", yylineno);
+  vfprintf(stderr, s, ap);
   fprintf(stderr, "\n");
 }
 
@@ -32,4 +37,36 @@ char* extrairConteudo(char* entrada) {
 void salvarConteudo(char** yylval, char* yytext) {
   *yylval = strdup(yytext);
   strcpy(*yylval, yytext);
+}
+
+No* alocarNo(char* valor) {
+  No* novoNo = (No*)malloc(sizeof(struct No));
+  novoNo->child = NULL;
+  novoNo->prox = NULL;
+  novoNo->value = malloc(sizeof valor);
+  strcat(novoNo->value, valor);
+  if (novoNo == NULL) {
+    yyerror("Erro de alocação.");
+  }
+  return novoNo;
+}
+
+void inserirNo(No** no, No* noInserido, int tipo) {
+  if (tipo == CHILD) {
+    (*no)->child = noInserido;
+  } else {
+    No* noAux = (*no);
+    while (noAux->prox != NULL) {
+      noAux = noAux->prox;
+    }
+    noAux->prox = noInserido;
+  }
+}
+
+void imprimirLista(No* no) {
+  while (no != NULL) {
+    printf("Valor do nó: %s\n", no->value);
+    imprimirLista(no->child);
+    no = no->prox;
+  }
 }

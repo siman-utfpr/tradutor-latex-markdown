@@ -1,0 +1,452 @@
+Terminals unused in grammar
+
+   SECAO
+   SUBSECAO
+
+
+Grammar
+
+    0 $accept: documento $end
+
+    1 documento: configuracoes principal
+
+    2 configuracoes: classe pacotes titulo autor data
+
+    3 classe: CLASSE '{' CONTEUDO '}'
+
+    4 pacotes: PACOTE '{' CONTEUDO '}' pacotes
+    5        | PACOTE '{' CONTEUDO '}'
+
+    6 titulo: TITULO '{' CONTEUDO '}'
+
+    7 autor: AUTOR '{' CONTEUDO '}'
+
+    8 data: DATA '{' CONTEUDO '}'
+
+    9 principal: INICIO corpoLista FIM
+
+   10 corpoLista: capitulo
+   11           | corpo
+
+   12 capitulo: CAPITULO '{' CONTEUDO '}' corpo
+
+   13 corpo: texto
+   14      | texto corpo
+
+   15 texto: PARAGRAFO '{' CONTEUDO '}'
+
+
+Terminals, with rules where they appear
+
+$end (0) 0
+'{' (123) 3 4 5 6 7 8 12 15
+'}' (125) 3 4 5 6 7 8 12 15
+error (256)
+TITULO (258) 6
+CLASSE (259) 3
+PACOTE (260) 4 5
+AUTOR (261) 7
+DATA (262) 8
+INICIO (263) 9
+FIM (264) 9
+CAPITULO (265) 12
+SECAO (266)
+SUBSECAO (267)
+PARAGRAFO (268) 15
+CONTEUDO (269) 3 4 5 6 7 8 12 15
+
+
+Nonterminals, with rules where they appear
+
+$accept (17)
+    on left: 0
+documento (18)
+    on left: 1, on right: 0
+configuracoes (19)
+    on left: 2, on right: 1
+classe (20)
+    on left: 3, on right: 2
+pacotes (21)
+    on left: 4 5, on right: 2 4
+titulo (22)
+    on left: 6, on right: 2
+autor (23)
+    on left: 7, on right: 2
+data (24)
+    on left: 8, on right: 2
+principal (25)
+    on left: 9, on right: 1
+corpoLista (26)
+    on left: 10 11, on right: 9
+capitulo (27)
+    on left: 12, on right: 10
+corpo (28)
+    on left: 13 14, on right: 11 12 14
+texto (29)
+    on left: 15, on right: 13 14
+
+
+State 0
+
+    0 $accept: . documento $end
+
+    CLASSE  shift, and go to state 1
+
+    documento      go to state 2
+    configuracoes  go to state 3
+    classe         go to state 4
+
+
+State 1
+
+    3 classe: CLASSE . '{' CONTEUDO '}'
+
+    '{'  shift, and go to state 5
+
+
+State 2
+
+    0 $accept: documento . $end
+
+    $end  shift, and go to state 6
+
+
+State 3
+
+    1 documento: configuracoes . principal
+
+    INICIO  shift, and go to state 7
+
+    principal  go to state 8
+
+
+State 4
+
+    2 configuracoes: classe . pacotes titulo autor data
+
+    PACOTE  shift, and go to state 9
+
+    pacotes  go to state 10
+
+
+State 5
+
+    3 classe: CLASSE '{' . CONTEUDO '}'
+
+    CONTEUDO  shift, and go to state 11
+
+
+State 6
+
+    0 $accept: documento $end .
+
+    $default  accept
+
+
+State 7
+
+    9 principal: INICIO . corpoLista FIM
+
+    CAPITULO   shift, and go to state 12
+    PARAGRAFO  shift, and go to state 13
+
+    corpoLista  go to state 14
+    capitulo    go to state 15
+    corpo       go to state 16
+    texto       go to state 17
+
+
+State 8
+
+    1 documento: configuracoes principal .
+
+    $default  reduce using rule 1 (documento)
+
+
+State 9
+
+    4 pacotes: PACOTE . '{' CONTEUDO '}' pacotes
+    5        | PACOTE . '{' CONTEUDO '}'
+
+    '{'  shift, and go to state 18
+
+
+State 10
+
+    2 configuracoes: classe pacotes . titulo autor data
+
+    TITULO  shift, and go to state 19
+
+    titulo  go to state 20
+
+
+State 11
+
+    3 classe: CLASSE '{' CONTEUDO . '}'
+
+    '}'  shift, and go to state 21
+
+
+State 12
+
+   12 capitulo: CAPITULO . '{' CONTEUDO '}' corpo
+
+    '{'  shift, and go to state 22
+
+
+State 13
+
+   15 texto: PARAGRAFO . '{' CONTEUDO '}'
+
+    '{'  shift, and go to state 23
+
+
+State 14
+
+    9 principal: INICIO corpoLista . FIM
+
+    FIM  shift, and go to state 24
+
+
+State 15
+
+   10 corpoLista: capitulo .
+
+    $default  reduce using rule 10 (corpoLista)
+
+
+State 16
+
+   11 corpoLista: corpo .
+
+    $default  reduce using rule 11 (corpoLista)
+
+
+State 17
+
+   13 corpo: texto .
+   14      | texto . corpo
+
+    PARAGRAFO  shift, and go to state 13
+
+    $default  reduce using rule 13 (corpo)
+
+    corpo  go to state 25
+    texto  go to state 17
+
+
+State 18
+
+    4 pacotes: PACOTE '{' . CONTEUDO '}' pacotes
+    5        | PACOTE '{' . CONTEUDO '}'
+
+    CONTEUDO  shift, and go to state 26
+
+
+State 19
+
+    6 titulo: TITULO . '{' CONTEUDO '}'
+
+    '{'  shift, and go to state 27
+
+
+State 20
+
+    2 configuracoes: classe pacotes titulo . autor data
+
+    AUTOR  shift, and go to state 28
+
+    autor  go to state 29
+
+
+State 21
+
+    3 classe: CLASSE '{' CONTEUDO '}' .
+
+    $default  reduce using rule 3 (classe)
+
+
+State 22
+
+   12 capitulo: CAPITULO '{' . CONTEUDO '}' corpo
+
+    CONTEUDO  shift, and go to state 30
+
+
+State 23
+
+   15 texto: PARAGRAFO '{' . CONTEUDO '}'
+
+    CONTEUDO  shift, and go to state 31
+
+
+State 24
+
+    9 principal: INICIO corpoLista FIM .
+
+    $default  reduce using rule 9 (principal)
+
+
+State 25
+
+   14 corpo: texto corpo .
+
+    $default  reduce using rule 14 (corpo)
+
+
+State 26
+
+    4 pacotes: PACOTE '{' CONTEUDO . '}' pacotes
+    5        | PACOTE '{' CONTEUDO . '}'
+
+    '}'  shift, and go to state 32
+
+
+State 27
+
+    6 titulo: TITULO '{' . CONTEUDO '}'
+
+    CONTEUDO  shift, and go to state 33
+
+
+State 28
+
+    7 autor: AUTOR . '{' CONTEUDO '}'
+
+    '{'  shift, and go to state 34
+
+
+State 29
+
+    2 configuracoes: classe pacotes titulo autor . data
+
+    DATA  shift, and go to state 35
+
+    data  go to state 36
+
+
+State 30
+
+   12 capitulo: CAPITULO '{' CONTEUDO . '}' corpo
+
+    '}'  shift, and go to state 37
+
+
+State 31
+
+   15 texto: PARAGRAFO '{' CONTEUDO . '}'
+
+    '}'  shift, and go to state 38
+
+
+State 32
+
+    4 pacotes: PACOTE '{' CONTEUDO '}' . pacotes
+    5        | PACOTE '{' CONTEUDO '}' .
+
+    PACOTE  shift, and go to state 9
+
+    $default  reduce using rule 5 (pacotes)
+
+    pacotes  go to state 39
+
+
+State 33
+
+    6 titulo: TITULO '{' CONTEUDO . '}'
+
+    '}'  shift, and go to state 40
+
+
+State 34
+
+    7 autor: AUTOR '{' . CONTEUDO '}'
+
+    CONTEUDO  shift, and go to state 41
+
+
+State 35
+
+    8 data: DATA . '{' CONTEUDO '}'
+
+    '{'  shift, and go to state 42
+
+
+State 36
+
+    2 configuracoes: classe pacotes titulo autor data .
+
+    $default  reduce using rule 2 (configuracoes)
+
+
+State 37
+
+   12 capitulo: CAPITULO '{' CONTEUDO '}' . corpo
+
+    PARAGRAFO  shift, and go to state 13
+
+    corpo  go to state 43
+    texto  go to state 17
+
+
+State 38
+
+   15 texto: PARAGRAFO '{' CONTEUDO '}' .
+
+    $default  reduce using rule 15 (texto)
+
+
+State 39
+
+    4 pacotes: PACOTE '{' CONTEUDO '}' pacotes .
+
+    $default  reduce using rule 4 (pacotes)
+
+
+State 40
+
+    6 titulo: TITULO '{' CONTEUDO '}' .
+
+    $default  reduce using rule 6 (titulo)
+
+
+State 41
+
+    7 autor: AUTOR '{' CONTEUDO . '}'
+
+    '}'  shift, and go to state 44
+
+
+State 42
+
+    8 data: DATA '{' . CONTEUDO '}'
+
+    CONTEUDO  shift, and go to state 45
+
+
+State 43
+
+   12 capitulo: CAPITULO '{' CONTEUDO '}' corpo .
+
+    $default  reduce using rule 12 (capitulo)
+
+
+State 44
+
+    7 autor: AUTOR '{' CONTEUDO '}' .
+
+    $default  reduce using rule 7 (autor)
+
+
+State 45
+
+    8 data: DATA '{' CONTEUDO . '}'
+
+    '}'  shift, and go to state 46
+
+
+State 46
+
+    8 data: DATA '{' CONTEUDO '}' .
+
+    $default  reduce using rule 8 (data)

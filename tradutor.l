@@ -10,8 +10,6 @@
 {TITULO} {salvarConteudo(&yylval.conteudo, yytext); return TITULO;}
 {AUTOR} {salvarConteudo(&yylval.conteudo, yytext); return AUTOR;}
 {DATA} {salvarConteudo(&yylval.conteudo, yytext); return DATA;} 
-NOME   [a-zA-Z0-9" "]+
-{NOME}     {return NOME;}
 */
 
 %}
@@ -30,15 +28,15 @@ SUBSECAO \\subsection
 
 CONTEUDO [a-zA-Z0-9 \n]+
 
-CLASSE \\documentclass(\[.*\])?\{[a-zA-Z]+\}
+CLASSE \\documentclass(\[.*\])?
 
-PACOTE \\usepackage(\[.*\])?\{[a-zA-Z0-9-]+\}
+PACOTE \\usepackage(\[.*\])?
 
 TITULO \\title
 
-AUTOR  \\author\{[a-zA-Z0-9" "]+\}
+AUTOR  \\author
 
-DATA   \\date\{([a-zA-Z" "0-9/-]+)\}
+DATA   \\date
 
 %%
 
@@ -50,6 +48,10 @@ DATA   \\date\{([a-zA-Z" "0-9/-]+)\}
 {SUBSECAO} {return SUBSECAO;}
 {PARAGRAFO} {return PARAGRAFO;}
 {TITULO} {return TITULO;}
+{CLASSE} {return CLASSE;}
+{PACOTE} {return PACOTE;}
+{AUTOR} {return AUTOR;}
+{DATA} {return DATA;}
 {CONTEUDO} {salvarConteudo(&yylval.conteudo, yytext); return CONTEUDO;}
 "{" |
 "}" {return yytext[0];}

@@ -8,67 +8,90 @@ int yylex();
 %}
 
 %union{
+  struct No *lista;
   char *conteudo;
 }
 
-%token PARAGRAFO TITULO INICIO FIM CAPITULO SECAO SUBSECAO
+%token TITULO CLASSE PACOTE AUTOR DATA
+%token INICIO FIM CAPITULO SECAO SUBSECAO PARAGRAFO
 %token <conteudo>  CONTEUDO
 %start documento
 
-%type <conteudo> secao capitulo subsecao corpo texto
+// %type <conteudo> secao capitulo subsecao corpo texto corpoLista
+%type <lista> documento configuracoes principal titulo classe pacotes autor data
+%type <lista> corpoLista capitulo corpo texto
 %%
 
-documento: configuracoes principal
-  ;
-
-configuracoes: titulo
-  ;
-
-titulo: TITULO '{' CONTEUDO '}' {
-  printf("Título encontrado: %s\n", $3);
+documento: configuracoes principal {  
+  $$ = alocarNo("DOCUMENTO");
+  inserirNo(&($$), $1, CHILD);
+  inserirNo(&($1), $2, PROX);
+  imprimirLista($$);
 }
   ;
 
-principal: inicio corpoLista fim
-  ;
-
-inicio: INICIO {
-  printf("Início do documento!\n");
+configuracoes: classe pacotes titulo autor data {
+  $$ = alocarNo("CONFIGURAÇÕES");
+  inserirNo(&($$), $1, CHILD);
+  inserirNo(&($1), $2, PROX);
+  inserirNo(&($2), $3, PROX);
+  inserirNo(&($3), $4, PROX);
+  inserirNo(&($4), $5, PROX);
 }
   ;
 
-corpoLista: 
-  | capitulo secao subsecao corpoLista {printf("%s\n--%s\n----%s\n", $1, $2, $3);}
-  | corpo 
+classe: CLASSE '{' CONTEUDO '}' { $$ = alocarNo($3); }
   ;
 
-capitulo: 
- | CAPITULO '{' CONTEUDO '}' corpo capitulo {$$ = $3; strcat($$, "\n"); strcat($$, $5);}
- | CAPITULO '{' CONTEUDO '}'
- ;
+pacotes: PACOTE '{' CONTEUDO '}' pacotes { $$ = alocarNo($3); inserirNo(&($$), $5, PROX);}
+  | PACOTE '{' CONTEUDO '}' {$$ = alocarNo($3); }
+  ;
 
-secao: {$$ = "";}
-  | SECAO '{' CONTEUDO '}' corpo secao { $$ = $3; strcat($$, "\n"); strcat($$, $5);}
+titulo: TITULO '{' CONTEUDO '}' { $$ = alocarNo($3);}
+  ;
+
+autor: AUTOR '{' CONTEUDO '}' { $$ = alocarNo($3);}
+  ;
+
+data: DATA '{' CONTEUDO '}' { $$ = alocarNo($3);}
+  ;
+
+principal: INICIO corpoLista FIM {
+  $$ = alocarNo("PRINCIPAL: ");
+  inserirNo(&($$), $2, CHILD);
+  }
+  ;
+
+corpoLista: capitulo { $$ = alocarNo("CORPO LISTA: "); inserirNo(&($$), $1, CHILD);}
   | corpo
   ;
 
-subsecao: {$$ = "";}
-  | SUBSECAO '{'CONTEUDO '}' corpo subsecao { $$ = $3; strcat($$, "\n"); strcat($$, $5);}
-  | corpo subsecao {}
+capitulo: CAPITULO '{' CONTEUDO '}' corpo {$$ = alocarNo($3); inserirNo(&($$), $5, CHILD); }
+  ;
+
+corpo: texto {$$ = alocarNo("CORPO: "); inserirNo(&($$), $1, CHILD);}
+  | texto corpo {$$ = alocarNo("CORPO: "); inserirNo(&($$), $1, CHILD); inserirNo(&($$), $2, PROX); }
+  ;
+
+texto: PARAGRAFO '{' CONTEUDO '}' { $$ = alocarNo($3);}
+  ;
+/*
+secao: {strcat($$, "");}
+  | SECAO '{' CONTEUDO '}' corpo { strcpy($$, "###"); strcat($$, $3);strcat($$, "\n");}
+  | corpo
+  ;
+
+subsecao: {strcat($$, "");}
+  | SUBSECAO '{'CONTEUDO '}' corpo {strcpy($$, "####"); strcat($$, $3);strcat($$, "\n");}
   ;
 
 corpo: texto {$$ = $1;}
- | texto corpo {strcat($$, "\n");strcat($$, $2);}
+ | texto corpo {strcat($$, $1);}
  ;
 
-texto: PARAGRAFO '{' CONTEUDO '}' {
-  $$ = $3;
-  //printf("Parágrafo: %s\n", $3);
+texto: PARAGRAFO '{' CONTEUDO '}' { //strcpy($$, $3);
+$$ = $3;
 }
   ;
-
-fim: FIM  {
-  printf("Fim do documento!\n");
-}
-  ;
+  */
 %%

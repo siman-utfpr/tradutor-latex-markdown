@@ -58,7 +58,7 @@ void inserirNo(No** no, No* noInserido, int tipo) {
 }
 
 void inserirEspacosLista(No** no, int numeroEspacos) {
-  No* noAux = (*no)->child->child;
+  No* noAux = (*no)->child;
   while (noAux != NULL) {
     noAux->numeroEspacos = numeroEspacos;
     noAux = noAux->prox;

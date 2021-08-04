@@ -53,8 +53,6 @@ DATA   \\date
 {FIMLISTAUL} {return FIMLISTAUL;}
 {INICIOLISTAOL} {return INICIOLISTAOL;}
 {FIMLISTAOL} {return FIMLISTAOL;}
-{INICIO} {return INICIO;}
-{FIM} {return FIM;}
 {CAPITULO} {return CAPITULO;}
 {SECAO} {return SECAO;}
 {SUBSECAO} {return SUBSECAO;}

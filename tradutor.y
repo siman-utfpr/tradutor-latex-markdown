@@ -113,7 +113,6 @@ corpo: texto {$$ = alocarNo("", C_NULO); inserirNo(&($$), $1, CHILD);}
     $$ = alocarNo("", C_NULO); 
     inserirNo(&($$), $1, CHILD); 
     inserirNo(&($$), $2, PROX); 
-    numeroEspacos = 0;
     }
   ;
 
@@ -138,28 +137,28 @@ listaOL: INICIOLISTAOL itensListaOL FIMLISTAOL {
   ;
 
 itensListaOL: ITEM '{' CONTEUDO '}' {
-  $$ = alocarNo("", C_NULO);  
+  $$ = alocarNo("", C_NULO); 
   No *noTemp = alocarNo($3, C_LISTAOL);
-  inserirNo(&($$), noTemp, CHILD);
+  inserirNo(&($$), noTemp, PROX);
   }
   | ITEM '{' CONTEUDO '}' itensListaOL {
     $$ = alocarNo("", C_NULO); 
     No *noTemp = alocarNo($3, C_LISTAOL);
-    inserirNo(&($$), noTemp, CHILD);
+    inserirNo(&($$), noTemp, PROX);
     inserirNo(&(noTemp), $5, PROX);
   }
   | listas {
     $$ = alocarNo("", C_NULO);
+    inserirEspacosLista(&($1), numeroEspacos);
     numeroEspacos += 2;
     inserirNo(&($$), $1, PROX);
-    inserirEspacosLista(&($1), numeroEspacos);
   }
   | listas itensListaOL {
     $$ = alocarNo("", C_NULO); 
     inserirNo(&($$), $1, PROX);
     inserirNo(&($1), $2, PROX);
-    numeroEspacos += 2;
     inserirEspacosLista(&($1), numeroEspacos);
+    numeroEspacos += 2;
   }
   ;
 

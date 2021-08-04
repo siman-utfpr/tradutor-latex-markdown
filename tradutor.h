@@ -1,27 +1,39 @@
+#include <stdio.h>
+#include <stdlib.h>
 #define CHILD 1
 #define PROX 2
+
+#define C_NULO 0
+#define C_CAPITULO 1
+#define C_SECAO 2
+#define C_SUBSECAO 3
+#define C_PARAGRAFO 4
+#define C_NEGRITO 5
+#define C_ITALICO 6
+#define C_LISTAU 7
+#define C_LISTAO 8
+#define C_CLASSE 9
+#define C_PACOTE 10
+#define C_AUTOR 11
+#define C_DATA 12
+#define C_TITULO 13
 
 struct No {
   char *value;
   struct No *child;
   struct No *prox;
+  int tipo;
 };
 
 typedef struct No No;
 
 extern int yylineno;
 
-No *alocarNo(char *);
+No *alocarNo(char *, int tipo);
 
 void inserirNo(No **, No *, int);
 
-void imprimirLista(No *);
-
-/*
-  Separa o conteúdo de uma tag do texto completo 
-*/
-char *
-extrairConteudo(char *);
+void imprimirLista(No *, FILE *);
 
 /*
   Função auxiliar do Lexer que inclui o valor filtrado de cada lexema em yylval

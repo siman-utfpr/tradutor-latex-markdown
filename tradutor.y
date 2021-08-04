@@ -5,6 +5,7 @@
 #include <string.h>
 
 int yylex();
+
 %}
 
 %union{
@@ -19,19 +20,22 @@ int yylex();
 
 // %type <conteudo> secao capitulo subsecao corpo texto corpoLista
 %type <lista> documento configuracoes principal titulo classe pacotes autor data
-%type <lista> corpoLista capitulo corpo texto
+%type <lista> corpoLista capitulo secao subsecao corpo texto
 %%
 
 documento: configuracoes principal {  
-  $$ = alocarNo("DOCUMENTO");
+  $$ = alocarNo("DOCUMENTO", C_NULO);
   inserirNo(&($$), $1, CHILD);
   inserirNo(&($1), $2, PROX);
-  imprimirLista($$);
+  FILE *arquivoSaida;
+  arquivoSaida = fopen("saida/teste1.md", "w");
+  imprimirLista($$, arquivoSaida);
+  fclose(arquivoSaida);
 }
   ;
 
 configuracoes: classe pacotes titulo autor data {
-  $$ = alocarNo("CONFIGURAÇÕES");
+  $$ = alocarNo("CONFIGURAÇÕES", C_NULO);
   inserirNo(&($$), $1, CHILD);
   inserirNo(&($1), $2, PROX);
   inserirNo(&($2), $3, PROX);
@@ -40,58 +44,73 @@ configuracoes: classe pacotes titulo autor data {
 }
   ;
 
-classe: CLASSE '{' CONTEUDO '}' { $$ = alocarNo($3); }
+classe: CLASSE '{' CONTEUDO '}' { $$ = alocarNo($3, C_CLASSE); }
   ;
 
-pacotes: PACOTE '{' CONTEUDO '}' pacotes { $$ = alocarNo($3); inserirNo(&($$), $5, PROX);}
-  | PACOTE '{' CONTEUDO '}' {$$ = alocarNo($3); }
+pacotes: PACOTE '{' CONTEUDO '}' pacotes { $$ = alocarNo($3, C_PACOTE); inserirNo(&($$), $5, PROX);}
+  | PACOTE '{' CONTEUDO '}' {$$ = alocarNo($3, C_PACOTE); }
   ;
 
-titulo: TITULO '{' CONTEUDO '}' { $$ = alocarNo($3);}
+titulo: TITULO '{' CONTEUDO '}' { $$ = alocarNo($3, C_TITULO);}
   ;
 
-autor: AUTOR '{' CONTEUDO '}' { $$ = alocarNo($3);}
+autor: AUTOR '{' CONTEUDO '}' { $$ = alocarNo($3, C_AUTOR);}
   ;
 
-data: DATA '{' CONTEUDO '}' { $$ = alocarNo($3);}
+data: DATA '{' CONTEUDO '}' { $$ = alocarNo($3, C_DATA);}
   ;
 
 principal: INICIO corpoLista FIM {
-  $$ = alocarNo("PRINCIPAL: ");
+  $$ = alocarNo("PRINCIPAL: ", C_NULO);
   inserirNo(&($$), $2, CHILD);
   }
   ;
 
-corpoLista: capitulo { $$ = alocarNo("CORPO LISTA: "); inserirNo(&($$), $1, CHILD);}
-  | corpo
+corpoLista:  {$$ = NULL; }
+  | capitulo corpoLista{ 
+    $$ = alocarNo("CORPO LISTA: ", C_NULO); 
+    inserirNo(&($$), $1, CHILD); 
+    //inserirNo(&($1), $2, CHILD);
+    //inserirNo(&($2), $3, CHILD);
+    inserirNo(&($$), $2, PROX);
+  }
+  | corpo {inserirNo(&($$), $1, CHILD);}
   ;
 
-capitulo: CAPITULO '{' CONTEUDO '}' corpo {$$ = alocarNo($3); inserirNo(&($$), $5, CHILD); }
+capitulo: CAPITULO '{' CONTEUDO '}' corpo secao { 
+    $$ = alocarNo($3, C_CAPITULO); 
+    inserirNo(&($$), $5, CHILD);
+    inserirNo(&($5), $6, PROX); 
+    }
+  | CAPITULO '{' CONTEUDO '}' secao {$$ = alocarNo($3, C_CAPITULO); inserirNo(&($$), $5, CHILD);}
   ;
 
-corpo: texto {$$ = alocarNo("CORPO: "); inserirNo(&($$), $1, CHILD);}
-  | texto corpo {$$ = alocarNo("CORPO: "); inserirNo(&($$), $1, CHILD); inserirNo(&($$), $2, PROX); }
+secao: {$$ = NULL;}
+  | SECAO '{' CONTEUDO '}' corpo subsecao secao{
+    $$ = alocarNo($3, C_SECAO); 
+    inserirNo(&($$), $5, CHILD);
+    inserirNo(&($5), $6, PROX); 
+    inserirNo(&($$), $7, PROX); 
+    }
+  | SECAO '{' CONTEUDO '}' subsecao secao {
+    $$ = alocarNo($3, C_SECAO);
+    inserirNo(&($$), $5, CHILD);
+    inserirNo(&($$), $6, PROX);
+    }
   ;
 
-texto: PARAGRAFO '{' CONTEUDO '}' { $$ = alocarNo($3);}
-  ;
-/*
-secao: {strcat($$, "");}
-  | SECAO '{' CONTEUDO '}' corpo { strcpy($$, "###"); strcat($$, $3);strcat($$, "\n");}
-  | corpo
-  ;
-
-subsecao: {strcat($$, "");}
-  | SUBSECAO '{'CONTEUDO '}' corpo {strcpy($$, "####"); strcat($$, $3);strcat($$, "\n");}
+subsecao: {$$ = NULL;}
+  | SUBSECAO '{' CONTEUDO '}' corpo subsecao {
+    $$ = alocarNo($3, C_SUBSECAO);
+    inserirNo(&($$), $6, PROX);
+    inserirNo(&($$), $5, CHILD); 
+    }
   ;
 
-corpo: texto {$$ = $1;}
- | texto corpo {strcat($$, $1);}
- ;
-
-texto: PARAGRAFO '{' CONTEUDO '}' { //strcpy($$, $3);
-$$ = $3;
-}
+corpo: texto {$$ = alocarNo("CORPO: ", C_NULO); inserirNo(&($$), $1, CHILD);}
+  | texto corpo {$$ = alocarNo("CORPO: ", C_NULO); inserirNo(&($$), $1, CHILD); inserirNo(&($$), $2, PROX); }
   ;
-  */
+
+texto: PARAGRAFO '{' CONTEUDO '}' { $$ = alocarNo($3, C_PARAGRAFO);}
+  ;
 %%

@@ -1,7 +1,6 @@
-Terminals unused in grammar
-
-   SECAO
-   SUBSECAO
+State 17 conflicts: 1 shift/reduce
+State 38 conflicts: 1 shift/reduce
+State 53 conflicts: 1 shift/reduce
 
 
 Grammar
@@ -25,22 +24,31 @@ Grammar
 
     9 principal: INICIO corpoLista FIM
 
-   10 corpoLista: capitulo
-   11           | corpo
+   10 corpoLista: %empty
+   11           | capitulo corpoLista
+   12           | corpo
 
-   12 capitulo: CAPITULO '{' CONTEUDO '}' corpo
+   13 capitulo: CAPITULO '{' CONTEUDO '}' corpo secao
+   14         | CAPITULO '{' CONTEUDO '}' secao
 
-   13 corpo: texto
-   14      | texto corpo
+   15 secao: %empty
+   16      | SECAO '{' CONTEUDO '}' corpo subsecao secao
+   17      | SECAO '{' CONTEUDO '}' subsecao secao
 
-   15 texto: PARAGRAFO '{' CONTEUDO '}'
+   18 subsecao: %empty
+   19         | SUBSECAO '{' CONTEUDO '}' corpo subsecao
+
+   20 corpo: texto
+   21      | texto corpo
+
+   22 texto: PARAGRAFO '{' CONTEUDO '}'
 
 
 Terminals, with rules where they appear
 
 $end (0) 0
-'{' (123) 3 4 5 6 7 8 12 15
-'}' (125) 3 4 5 6 7 8 12 15
+'{' (123) 3 4 5 6 7 8 13 14 16 17 19 22
+'}' (125) 3 4 5 6 7 8 13 14 16 17 19 22
 error (256)
 TITULO (258) 6
 CLASSE (259) 3
@@ -49,11 +57,11 @@ AUTOR (261) 7
 DATA (262) 8
 INICIO (263) 9
 FIM (264) 9
-CAPITULO (265) 12
-SECAO (266)
-SUBSECAO (267)
-PARAGRAFO (268) 15
-CONTEUDO (269) 3 4 5 6 7 8 12 15
+CAPITULO (265) 13 14
+SECAO (266) 16 17
+SUBSECAO (267) 19
+PARAGRAFO (268) 22
+CONTEUDO (269) 3 4 5 6 7 8 13 14 16 17 19 22
 
 
 Nonterminals, with rules where they appear
@@ -77,13 +85,17 @@ data (24)
 principal (25)
     on left: 9, on right: 1
 corpoLista (26)
-    on left: 10 11, on right: 9
+    on left: 10 11 12, on right: 9 11
 capitulo (27)
-    on left: 12, on right: 10
-corpo (28)
-    on left: 13 14, on right: 11 12 14
-texto (29)
-    on left: 15, on right: 13 14
+    on left: 13 14, on right: 11
+secao (28)
+    on left: 15 16 17, on right: 13 14 16 17
+subsecao (29)
+    on left: 18 19, on right: 16 17 19
+corpo (30)
+    on left: 20 21, on right: 12 13 16 19 21
+texto (31)
+    on left: 22, on right: 20 21
 
 
 State 0
@@ -150,6 +162,8 @@ State 7
     CAPITULO   shift, and go to state 12
     PARAGRAFO  shift, and go to state 13
 
+    $default  reduce using rule 10 (corpoLista)
+
     corpoLista  go to state 14
     capitulo    go to state 15
     corpo       go to state 16
@@ -189,14 +203,15 @@ State 11
 
 State 12
 
-   12 capitulo: CAPITULO . '{' CONTEUDO '}' corpo
+   13 capitulo: CAPITULO . '{' CONTEUDO '}' corpo secao
+   14         | CAPITULO . '{' CONTEUDO '}' secao
 
     '{'  shift, and go to state 22
 
 
 State 13
 
-   15 texto: PARAGRAFO . '{' CONTEUDO '}'
+   22 texto: PARAGRAFO . '{' CONTEUDO '}'
 
     '{'  shift, and go to state 23
 
@@ -210,28 +225,37 @@ State 14
 
 State 15
 
-   10 corpoLista: capitulo .
+   11 corpoLista: capitulo . corpoLista
+
+    CAPITULO   shift, and go to state 12
+    PARAGRAFO  shift, and go to state 13
 
     $default  reduce using rule 10 (corpoLista)
+
+    corpoLista  go to state 25
+    capitulo    go to state 15
+    corpo       go to state 16
+    texto       go to state 17
 
 
 State 16
 
-   11 corpoLista: corpo .
+   12 corpoLista: corpo .
 
-    $default  reduce using rule 11 (corpoLista)
+    $default  reduce using rule 12 (corpoLista)
 
 
 State 17
 
-   13 corpo: texto .
-   14      | texto . corpo
+   20 corpo: texto .
+   21      | texto . corpo
 
     PARAGRAFO  shift, and go to state 13
 
-    $default  reduce using rule 13 (corpo)
+    PARAGRAFO  [reduce using rule 20 (corpo)]
+    $default   reduce using rule 20 (corpo)
 
-    corpo  go to state 25
+    corpo  go to state 26
     texto  go to state 17
 
 
@@ -240,23 +264,23 @@ State 18
     4 pacotes: PACOTE '{' . CONTEUDO '}' pacotes
     5        | PACOTE '{' . CONTEUDO '}'
 
-    CONTEUDO  shift, and go to state 26
+    CONTEUDO  shift, and go to state 27
 
 
 State 19
 
     6 titulo: TITULO . '{' CONTEUDO '}'
 
-    '{'  shift, and go to state 27
+    '{'  shift, and go to state 28
 
 
 State 20
 
     2 configuracoes: classe pacotes titulo . autor data
 
-    AUTOR  shift, and go to state 28
+    AUTOR  shift, and go to state 29
 
-    autor  go to state 29
+    autor  go to state 30
 
 
 State 21
@@ -268,16 +292,17 @@ State 21
 
 State 22
 
-   12 capitulo: CAPITULO '{' . CONTEUDO '}' corpo
+   13 capitulo: CAPITULO '{' . CONTEUDO '}' corpo secao
+   14         | CAPITULO '{' . CONTEUDO '}' secao
 
-    CONTEUDO  shift, and go to state 30
+    CONTEUDO  shift, and go to state 31
 
 
 State 23
 
-   15 texto: PARAGRAFO '{' . CONTEUDO '}'
+   22 texto: PARAGRAFO '{' . CONTEUDO '}'
 
-    CONTEUDO  shift, and go to state 31
+    CONTEUDO  shift, and go to state 32
 
 
 State 24
@@ -289,57 +314,65 @@ State 24
 
 State 25
 
-   14 corpo: texto corpo .
+   11 corpoLista: capitulo corpoLista .
 
-    $default  reduce using rule 14 (corpo)
+    $default  reduce using rule 11 (corpoLista)
 
 
 State 26
 
-    4 pacotes: PACOTE '{' CONTEUDO . '}' pacotes
-    5        | PACOTE '{' CONTEUDO . '}'
+   21 corpo: texto corpo .
 
-    '}'  shift, and go to state 32
+    $default  reduce using rule 21 (corpo)
 
 
 State 27
 
-    6 titulo: TITULO '{' . CONTEUDO '}'
+    4 pacotes: PACOTE '{' CONTEUDO . '}' pacotes
+    5        | PACOTE '{' CONTEUDO . '}'
 
-    CONTEUDO  shift, and go to state 33
+    '}'  shift, and go to state 33
 
 
 State 28
 
-    7 autor: AUTOR . '{' CONTEUDO '}'
+    6 titulo: TITULO '{' . CONTEUDO '}'
 
-    '{'  shift, and go to state 34
+    CONTEUDO  shift, and go to state 34
 
 
 State 29
 
-    2 configuracoes: classe pacotes titulo autor . data
+    7 autor: AUTOR . '{' CONTEUDO '}'
 
-    DATA  shift, and go to state 35
-
-    data  go to state 36
+    '{'  shift, and go to state 35
 
 
 State 30
 
-   12 capitulo: CAPITULO '{' CONTEUDO . '}' corpo
+    2 configuracoes: classe pacotes titulo autor . data
 
-    '}'  shift, and go to state 37
+    DATA  shift, and go to state 36
+
+    data  go to state 37
 
 
 State 31
 
-   15 texto: PARAGRAFO '{' CONTEUDO . '}'
+   13 capitulo: CAPITULO '{' CONTEUDO . '}' corpo secao
+   14         | CAPITULO '{' CONTEUDO . '}' secao
 
     '}'  shift, and go to state 38
 
 
 State 32
+
+   22 texto: PARAGRAFO '{' CONTEUDO . '}'
+
+    '}'  shift, and go to state 39
+
+
+State 33
 
     4 pacotes: PACOTE '{' CONTEUDO '}' . pacotes
     5        | PACOTE '{' CONTEUDO '}' .
@@ -348,105 +381,265 @@ State 32
 
     $default  reduce using rule 5 (pacotes)
 
-    pacotes  go to state 39
-
-
-State 33
-
-    6 titulo: TITULO '{' CONTEUDO . '}'
-
-    '}'  shift, and go to state 40
+    pacotes  go to state 40
 
 
 State 34
 
-    7 autor: AUTOR '{' . CONTEUDO '}'
+    6 titulo: TITULO '{' CONTEUDO . '}'
 
-    CONTEUDO  shift, and go to state 41
+    '}'  shift, and go to state 41
 
 
 State 35
 
-    8 data: DATA . '{' CONTEUDO '}'
+    7 autor: AUTOR '{' . CONTEUDO '}'
 
-    '{'  shift, and go to state 42
+    CONTEUDO  shift, and go to state 42
 
 
 State 36
+
+    8 data: DATA . '{' CONTEUDO '}'
+
+    '{'  shift, and go to state 43
+
+
+State 37
 
     2 configuracoes: classe pacotes titulo autor data .
 
     $default  reduce using rule 2 (configuracoes)
 
 
-State 37
+State 38
 
-   12 capitulo: CAPITULO '{' CONTEUDO '}' . corpo
+   13 capitulo: CAPITULO '{' CONTEUDO '}' . corpo secao
+   14         | CAPITULO '{' CONTEUDO '}' . secao
 
+    SECAO      shift, and go to state 44
     PARAGRAFO  shift, and go to state 13
 
-    corpo  go to state 43
+    PARAGRAFO  [reduce using rule 15 (secao)]
+    $default   reduce using rule 15 (secao)
+
+    secao  go to state 45
+    corpo  go to state 46
     texto  go to state 17
 
 
-State 38
-
-   15 texto: PARAGRAFO '{' CONTEUDO '}' .
-
-    $default  reduce using rule 15 (texto)
-
-
 State 39
+
+   22 texto: PARAGRAFO '{' CONTEUDO '}' .
+
+    $default  reduce using rule 22 (texto)
+
+
+State 40
 
     4 pacotes: PACOTE '{' CONTEUDO '}' pacotes .
 
     $default  reduce using rule 4 (pacotes)
 
 
-State 40
+State 41
 
     6 titulo: TITULO '{' CONTEUDO '}' .
 
     $default  reduce using rule 6 (titulo)
 
 
-State 41
+State 42
 
     7 autor: AUTOR '{' CONTEUDO . '}'
 
-    '}'  shift, and go to state 44
-
-
-State 42
-
-    8 data: DATA '{' . CONTEUDO '}'
-
-    CONTEUDO  shift, and go to state 45
+    '}'  shift, and go to state 47
 
 
 State 43
 
-   12 capitulo: CAPITULO '{' CONTEUDO '}' corpo .
+    8 data: DATA '{' . CONTEUDO '}'
 
-    $default  reduce using rule 12 (capitulo)
+    CONTEUDO  shift, and go to state 48
 
 
 State 44
+
+   16 secao: SECAO . '{' CONTEUDO '}' corpo subsecao secao
+   17      | SECAO . '{' CONTEUDO '}' subsecao secao
+
+    '{'  shift, and go to state 49
+
+
+State 45
+
+   14 capitulo: CAPITULO '{' CONTEUDO '}' secao .
+
+    $default  reduce using rule 14 (capitulo)
+
+
+State 46
+
+   13 capitulo: CAPITULO '{' CONTEUDO '}' corpo . secao
+
+    SECAO  shift, and go to state 44
+
+    $default  reduce using rule 15 (secao)
+
+    secao  go to state 50
+
+
+State 47
 
     7 autor: AUTOR '{' CONTEUDO '}' .
 
     $default  reduce using rule 7 (autor)
 
 
-State 45
+State 48
 
     8 data: DATA '{' CONTEUDO . '}'
 
-    '}'  shift, and go to state 46
+    '}'  shift, and go to state 51
 
 
-State 46
+State 49
+
+   16 secao: SECAO '{' . CONTEUDO '}' corpo subsecao secao
+   17      | SECAO '{' . CONTEUDO '}' subsecao secao
+
+    CONTEUDO  shift, and go to state 52
+
+
+State 50
+
+   13 capitulo: CAPITULO '{' CONTEUDO '}' corpo secao .
+
+    $default  reduce using rule 13 (capitulo)
+
+
+State 51
 
     8 data: DATA '{' CONTEUDO '}' .
 
     $default  reduce using rule 8 (data)
+
+
+State 52
+
+   16 secao: SECAO '{' CONTEUDO . '}' corpo subsecao secao
+   17      | SECAO '{' CONTEUDO . '}' subsecao secao
+
+    '}'  shift, and go to state 53
+
+
+State 53
+
+   16 secao: SECAO '{' CONTEUDO '}' . corpo subsecao secao
+   17      | SECAO '{' CONTEUDO '}' . subsecao secao
+
+    SUBSECAO   shift, and go to state 54
+    PARAGRAFO  shift, and go to state 13
+
+    PARAGRAFO  [reduce using rule 18 (subsecao)]
+    $default   reduce using rule 18 (subsecao)
+
+    subsecao  go to state 55
+    corpo     go to state 56
+    texto     go to state 17
+
+
+State 54
+
+   19 subsecao: SUBSECAO . '{' CONTEUDO '}' corpo subsecao
+
+    '{'  shift, and go to state 57
+
+
+State 55
+
+   17 secao: SECAO '{' CONTEUDO '}' subsecao . secao
+
+    SECAO  shift, and go to state 44
+
+    $default  reduce using rule 15 (secao)
+
+    secao  go to state 58
+
+
+State 56
+
+   16 secao: SECAO '{' CONTEUDO '}' corpo . subsecao secao
+
+    SUBSECAO  shift, and go to state 54
+
+    $default  reduce using rule 18 (subsecao)
+
+    subsecao  go to state 59
+
+
+State 57
+
+   19 subsecao: SUBSECAO '{' . CONTEUDO '}' corpo subsecao
+
+    CONTEUDO  shift, and go to state 60
+
+
+State 58
+
+   17 secao: SECAO '{' CONTEUDO '}' subsecao secao .
+
+    $default  reduce using rule 17 (secao)
+
+
+State 59
+
+   16 secao: SECAO '{' CONTEUDO '}' corpo subsecao . secao
+
+    SECAO  shift, and go to state 44
+
+    $default  reduce using rule 15 (secao)
+
+    secao  go to state 61
+
+
+State 60
+
+   19 subsecao: SUBSECAO '{' CONTEUDO . '}' corpo subsecao
+
+    '}'  shift, and go to state 62
+
+
+State 61
+
+   16 secao: SECAO '{' CONTEUDO '}' corpo subsecao secao .
+
+    $default  reduce using rule 16 (secao)
+
+
+State 62
+
+   19 subsecao: SUBSECAO '{' CONTEUDO '}' . corpo subsecao
+
+    PARAGRAFO  shift, and go to state 13
+
+    corpo  go to state 63
+    texto  go to state 17
+
+
+State 63
+
+   19 subsecao: SUBSECAO '{' CONTEUDO '}' corpo . subsecao
+
+    SUBSECAO  shift, and go to state 54
+
+    $default  reduce using rule 18 (subsecao)
+
+    subsecao  go to state 64
+
+
+State 64
+
+   19 subsecao: SUBSECAO '{' CONTEUDO '}' corpo subsecao .
+
+    $default  reduce using rule 19 (subsecao)

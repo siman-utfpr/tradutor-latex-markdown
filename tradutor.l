@@ -39,8 +39,7 @@ AUTOR  \\author
 DATA   \\date
 
 %%
-
-\n {}
+[\t\n] 
 {INICIO} {return INICIO;}
 {FIM} {return FIM;}
 {CAPITULO} {return CAPITULO;}

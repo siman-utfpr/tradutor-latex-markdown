@@ -1,6 +1,26 @@
-State 17 conflicts: 1 shift/reduce
-State 38 conflicts: 1 shift/reduce
-State 53 conflicts: 1 shift/reduce
+Nonterminals useless in grammar
+
+   itensListaUL
+
+
+Terminals unused in grammar
+
+   INICIOLISTAUL
+   FIMLISTAUL
+
+
+State 7 conflicts: 5 shift/reduce, 6 reduce/reduce
+State 16 conflicts: 2 shift/reduce
+State 17 conflicts: 4 shift/reduce
+State 19 conflicts: 5 shift/reduce, 6 reduce/reduce
+State 21 conflicts: 5 shift/reduce, 9 reduce/reduce
+State 23 conflicts: 5 shift/reduce, 9 reduce/reduce
+State 33 conflicts: 2 shift/reduce, 1 reduce/reduce
+State 56 conflicts: 6 shift/reduce, 8 reduce/reduce
+State 59 conflicts: 4 shift/reduce
+State 67 conflicts: 2 shift/reduce, 1 reduce/reduce
+State 76 conflicts: 6 shift/reduce, 9 reduce/reduce
+State 85 conflicts: 5 shift/reduce, 9 reduce/reduce
 
 
 Grammar
@@ -40,15 +60,34 @@ Grammar
 
    20 corpo: texto
    21      | texto corpo
+   22      | listas corpo
 
-   22 texto: PARAGRAFO '{' CONTEUDO '}'
+   23 texto: %empty
+   24      | CONTEUDO texto
+   25      | PARAGRAFO '{' texto '}'
+   26      | textoEstilo '{' CONTEUDO '}' texto
+
+   27 textoEstilo: NEGRITO
+   28            | ITALICO
+
+   29 listas: listaOL
+   30       | listaUL
+
+   31 listaOL: INICIOLISTAOL itensListaOL FIMLISTAOL
+
+   32 itensListaOL: ITEM '{' CONTEUDO '}'
+   33             | ITEM '{' CONTEUDO '}' itensListaOL
+   34             | listas
+   35             | listas itensListaOL
+
+   36 listaUL: %empty
 
 
 Terminals, with rules where they appear
 
 $end (0) 0
-'{' (123) 3 4 5 6 7 8 13 14 16 17 19 22
-'}' (125) 3 4 5 6 7 8 13 14 16 17 19 22
+'{' (123) 3 4 5 6 7 8 13 14 16 17 19 25 26 32 33
+'}' (125) 3 4 5 6 7 8 13 14 16 17 19 25 26 32 33
 error (256)
 TITULO (258) 6
 CLASSE (259) 3
@@ -60,42 +99,59 @@ FIM (264) 9
 CAPITULO (265) 13 14
 SECAO (266) 16 17
 SUBSECAO (267) 19
-PARAGRAFO (268) 22
-CONTEUDO (269) 3 4 5 6 7 8 13 14 16 17 19 22
+PARAGRAFO (268) 25
+NEGRITO (269) 27
+ITALICO (270) 28
+ITEM (271) 32 33
+INICIOLISTAUL (272)
+INICIOLISTAOL (273) 31
+FIMLISTAUL (274)
+FIMLISTAOL (275) 31
+CONTEUDO (276) 3 4 5 6 7 8 13 14 16 17 19 24 26 32 33
 
 
 Nonterminals, with rules where they appear
 
-$accept (17)
+$accept (24)
     on left: 0
-documento (18)
+documento (25)
     on left: 1, on right: 0
-configuracoes (19)
+configuracoes (26)
     on left: 2, on right: 1
-classe (20)
+classe (27)
     on left: 3, on right: 2
-pacotes (21)
+pacotes (28)
     on left: 4 5, on right: 2 4
-titulo (22)
+titulo (29)
     on left: 6, on right: 2
-autor (23)
+autor (30)
     on left: 7, on right: 2
-data (24)
+data (31)
     on left: 8, on right: 2
-principal (25)
+principal (32)
     on left: 9, on right: 1
-corpoLista (26)
+corpoLista (33)
     on left: 10 11 12, on right: 9 11
-capitulo (27)
+capitulo (34)
     on left: 13 14, on right: 11
-secao (28)
+secao (35)
     on left: 15 16 17, on right: 13 14 16 17
-subsecao (29)
+subsecao (36)
     on left: 18 19, on right: 16 17 19
-corpo (30)
-    on left: 20 21, on right: 12 13 16 19 21
-texto (31)
-    on left: 22, on right: 20 21
+corpo (37)
+    on left: 20 21 22, on right: 12 13 16 19 21 22
+texto (38)
+    on left: 23 24 25 26, on right: 20 21 24 25 26
+textoEstilo (39)
+    on left: 27 28, on right: 26
+listas (40)
+    on left: 29 30, on right: 22 34 35
+listaOL (41)
+    on left: 31, on right: 29
+itensListaOL (42)
+    on left: 32 33 34 35, on right: 31 33 35
+listaUL (43)
+    on left: 36, on right: 30
 
 
 State 0
@@ -159,15 +215,36 @@ State 7
 
     9 principal: INICIO . corpoLista FIM
 
-    CAPITULO   shift, and go to state 12
-    PARAGRAFO  shift, and go to state 13
+    CAPITULO       shift, and go to state 12
+    PARAGRAFO      shift, and go to state 13
+    NEGRITO        shift, and go to state 14
+    ITALICO        shift, and go to state 15
+    INICIOLISTAOL  shift, and go to state 16
+    CONTEUDO       shift, and go to state 17
 
-    $default  reduce using rule 10 (corpoLista)
+    FIM            reduce using rule 10 (corpoLista)
+    FIM            [reduce using rule 23 (texto)]
+    FIM            [reduce using rule 36 (listaUL)]
+    PARAGRAFO      [reduce using rule 23 (texto)]
+    PARAGRAFO      [reduce using rule 36 (listaUL)]
+    NEGRITO        [reduce using rule 23 (texto)]
+    NEGRITO        [reduce using rule 36 (listaUL)]
+    ITALICO        [reduce using rule 23 (texto)]
+    ITALICO        [reduce using rule 36 (listaUL)]
+    INICIOLISTAOL  [reduce using rule 23 (texto)]
+    INICIOLISTAOL  [reduce using rule 36 (listaUL)]
+    CONTEUDO       [reduce using rule 23 (texto)]
+    CONTEUDO       [reduce using rule 36 (listaUL)]
+    $default       reduce using rule 10 (corpoLista)
 
-    corpoLista  go to state 14
-    capitulo    go to state 15
-    corpo       go to state 16
-    texto       go to state 17
+    corpoLista   go to state 18
+    capitulo     go to state 19
+    corpo        go to state 20
+    texto        go to state 21
+    textoEstilo  go to state 22
+    listas       go to state 23
+    listaOL      go to state 24
+    listaUL      go to state 25
 
 
 State 8
@@ -182,23 +259,23 @@ State 9
     4 pacotes: PACOTE . '{' CONTEUDO '}' pacotes
     5        | PACOTE . '{' CONTEUDO '}'
 
-    '{'  shift, and go to state 18
+    '{'  shift, and go to state 26
 
 
 State 10
 
     2 configuracoes: classe pacotes . titulo autor data
 
-    TITULO  shift, and go to state 19
+    TITULO  shift, and go to state 27
 
-    titulo  go to state 20
+    titulo  go to state 28
 
 
 State 11
 
     3 classe: CLASSE '{' CONTEUDO . '}'
 
-    '}'  shift, and go to state 21
+    '}'  shift, and go to state 29
 
 
 State 12
@@ -206,173 +283,430 @@ State 12
    13 capitulo: CAPITULO . '{' CONTEUDO '}' corpo secao
    14         | CAPITULO . '{' CONTEUDO '}' secao
 
-    '{'  shift, and go to state 22
+    '{'  shift, and go to state 30
 
 
 State 13
 
-   22 texto: PARAGRAFO . '{' CONTEUDO '}'
+   25 texto: PARAGRAFO . '{' texto '}'
 
-    '{'  shift, and go to state 23
+    '{'  shift, and go to state 31
 
 
 State 14
 
-    9 principal: INICIO corpoLista . FIM
+   27 textoEstilo: NEGRITO .
 
-    FIM  shift, and go to state 24
+    $default  reduce using rule 27 (textoEstilo)
 
 
 State 15
 
-   11 corpoLista: capitulo . corpoLista
+   28 textoEstilo: ITALICO .
 
-    CAPITULO   shift, and go to state 12
-    PARAGRAFO  shift, and go to state 13
-
-    $default  reduce using rule 10 (corpoLista)
-
-    corpoLista  go to state 25
-    capitulo    go to state 15
-    corpo       go to state 16
-    texto       go to state 17
+    $default  reduce using rule 28 (textoEstilo)
 
 
 State 16
+
+   31 listaOL: INICIOLISTAOL . itensListaOL FIMLISTAOL
+
+    ITEM           shift, and go to state 32
+    INICIOLISTAOL  shift, and go to state 16
+
+    ITEM           [reduce using rule 36 (listaUL)]
+    INICIOLISTAOL  [reduce using rule 36 (listaUL)]
+    $default       reduce using rule 36 (listaUL)
+
+    listas        go to state 33
+    listaOL       go to state 24
+    itensListaOL  go to state 34
+    listaUL       go to state 25
+
+
+State 17
+
+   24 texto: CONTEUDO . texto
+
+    PARAGRAFO  shift, and go to state 13
+    NEGRITO    shift, and go to state 14
+    ITALICO    shift, and go to state 15
+    CONTEUDO   shift, and go to state 17
+
+    PARAGRAFO  [reduce using rule 23 (texto)]
+    NEGRITO    [reduce using rule 23 (texto)]
+    ITALICO    [reduce using rule 23 (texto)]
+    CONTEUDO   [reduce using rule 23 (texto)]
+    $default   reduce using rule 23 (texto)
+
+    texto        go to state 35
+    textoEstilo  go to state 22
+
+
+State 18
+
+    9 principal: INICIO corpoLista . FIM
+
+    FIM  shift, and go to state 36
+
+
+State 19
+
+   11 corpoLista: capitulo . corpoLista
+
+    CAPITULO       shift, and go to state 12
+    PARAGRAFO      shift, and go to state 13
+    NEGRITO        shift, and go to state 14
+    ITALICO        shift, and go to state 15
+    INICIOLISTAOL  shift, and go to state 16
+    CONTEUDO       shift, and go to state 17
+
+    FIM            reduce using rule 10 (corpoLista)
+    FIM            [reduce using rule 23 (texto)]
+    FIM            [reduce using rule 36 (listaUL)]
+    PARAGRAFO      [reduce using rule 23 (texto)]
+    PARAGRAFO      [reduce using rule 36 (listaUL)]
+    NEGRITO        [reduce using rule 23 (texto)]
+    NEGRITO        [reduce using rule 36 (listaUL)]
+    ITALICO        [reduce using rule 23 (texto)]
+    ITALICO        [reduce using rule 36 (listaUL)]
+    INICIOLISTAOL  [reduce using rule 23 (texto)]
+    INICIOLISTAOL  [reduce using rule 36 (listaUL)]
+    CONTEUDO       [reduce using rule 23 (texto)]
+    CONTEUDO       [reduce using rule 36 (listaUL)]
+    $default       reduce using rule 10 (corpoLista)
+
+    corpoLista   go to state 37
+    capitulo     go to state 19
+    corpo        go to state 20
+    texto        go to state 21
+    textoEstilo  go to state 22
+    listas       go to state 23
+    listaOL      go to state 24
+    listaUL      go to state 25
+
+
+State 20
 
    12 corpoLista: corpo .
 
     $default  reduce using rule 12 (corpoLista)
 
 
-State 17
+State 21
 
    20 corpo: texto .
    21      | texto . corpo
 
-    PARAGRAFO  shift, and go to state 13
+    PARAGRAFO      shift, and go to state 13
+    NEGRITO        shift, and go to state 14
+    ITALICO        shift, and go to state 15
+    INICIOLISTAOL  shift, and go to state 16
+    CONTEUDO       shift, and go to state 17
 
-    PARAGRAFO  [reduce using rule 20 (corpo)]
-    $default   reduce using rule 20 (corpo)
+    FIM            reduce using rule 20 (corpo)
+    FIM            [reduce using rule 23 (texto)]
+    FIM            [reduce using rule 36 (listaUL)]
+    CAPITULO       reduce using rule 20 (corpo)
+    CAPITULO       [reduce using rule 23 (texto)]
+    CAPITULO       [reduce using rule 36 (listaUL)]
+    SECAO          reduce using rule 20 (corpo)
+    SECAO          [reduce using rule 23 (texto)]
+    SECAO          [reduce using rule 36 (listaUL)]
+    SUBSECAO       reduce using rule 20 (corpo)
+    SUBSECAO       [reduce using rule 23 (texto)]
+    SUBSECAO       [reduce using rule 36 (listaUL)]
+    PARAGRAFO      [reduce using rule 20 (corpo)]
+    PARAGRAFO      [reduce using rule 23 (texto)]
+    PARAGRAFO      [reduce using rule 36 (listaUL)]
+    NEGRITO        [reduce using rule 20 (corpo)]
+    NEGRITO        [reduce using rule 23 (texto)]
+    NEGRITO        [reduce using rule 36 (listaUL)]
+    ITALICO        [reduce using rule 20 (corpo)]
+    ITALICO        [reduce using rule 23 (texto)]
+    ITALICO        [reduce using rule 36 (listaUL)]
+    INICIOLISTAOL  [reduce using rule 20 (corpo)]
+    INICIOLISTAOL  [reduce using rule 23 (texto)]
+    INICIOLISTAOL  [reduce using rule 36 (listaUL)]
+    CONTEUDO       [reduce using rule 20 (corpo)]
+    CONTEUDO       [reduce using rule 23 (texto)]
+    CONTEUDO       [reduce using rule 36 (listaUL)]
+    $default       reduce using rule 20 (corpo)
 
-    corpo  go to state 26
-    texto  go to state 17
+    corpo        go to state 38
+    texto        go to state 21
+    textoEstilo  go to state 22
+    listas       go to state 23
+    listaOL      go to state 24
+    listaUL      go to state 25
 
 
-State 18
+State 22
+
+   26 texto: textoEstilo . '{' CONTEUDO '}' texto
+
+    '{'  shift, and go to state 39
+
+
+State 23
+
+   22 corpo: listas . corpo
+
+    PARAGRAFO      shift, and go to state 13
+    NEGRITO        shift, and go to state 14
+    ITALICO        shift, and go to state 15
+    INICIOLISTAOL  shift, and go to state 16
+    CONTEUDO       shift, and go to state 17
+
+    FIM            reduce using rule 23 (texto)
+    FIM            [reduce using rule 36 (listaUL)]
+    CAPITULO       reduce using rule 23 (texto)
+    CAPITULO       [reduce using rule 36 (listaUL)]
+    SECAO          reduce using rule 23 (texto)
+    SECAO          [reduce using rule 36 (listaUL)]
+    SUBSECAO       reduce using rule 23 (texto)
+    SUBSECAO       [reduce using rule 36 (listaUL)]
+    PARAGRAFO      [reduce using rule 23 (texto)]
+    PARAGRAFO      [reduce using rule 36 (listaUL)]
+    NEGRITO        [reduce using rule 23 (texto)]
+    NEGRITO        [reduce using rule 36 (listaUL)]
+    ITALICO        [reduce using rule 23 (texto)]
+    ITALICO        [reduce using rule 36 (listaUL)]
+    INICIOLISTAOL  [reduce using rule 23 (texto)]
+    INICIOLISTAOL  [reduce using rule 36 (listaUL)]
+    CONTEUDO       [reduce using rule 23 (texto)]
+    CONTEUDO       [reduce using rule 36 (listaUL)]
+    $default       reduce using rule 23 (texto)
+
+    corpo        go to state 40
+    texto        go to state 21
+    textoEstilo  go to state 22
+    listas       go to state 23
+    listaOL      go to state 24
+    listaUL      go to state 25
+
+
+State 24
+
+   29 listas: listaOL .
+
+    $default  reduce using rule 29 (listas)
+
+
+State 25
+
+   30 listas: listaUL .
+
+    $default  reduce using rule 30 (listas)
+
+
+State 26
 
     4 pacotes: PACOTE '{' . CONTEUDO '}' pacotes
     5        | PACOTE '{' . CONTEUDO '}'
 
-    CONTEUDO  shift, and go to state 27
+    CONTEUDO  shift, and go to state 41
 
 
-State 19
+State 27
 
     6 titulo: TITULO . '{' CONTEUDO '}'
 
-    '{'  shift, and go to state 28
+    '{'  shift, and go to state 42
 
 
-State 20
+State 28
 
     2 configuracoes: classe pacotes titulo . autor data
 
-    AUTOR  shift, and go to state 29
+    AUTOR  shift, and go to state 43
 
-    autor  go to state 30
+    autor  go to state 44
 
 
-State 21
+State 29
 
     3 classe: CLASSE '{' CONTEUDO '}' .
 
     $default  reduce using rule 3 (classe)
 
 
-State 22
+State 30
 
    13 capitulo: CAPITULO '{' . CONTEUDO '}' corpo secao
    14         | CAPITULO '{' . CONTEUDO '}' secao
 
-    CONTEUDO  shift, and go to state 31
+    CONTEUDO  shift, and go to state 45
 
 
-State 23
+State 31
 
-   22 texto: PARAGRAFO '{' . CONTEUDO '}'
+   25 texto: PARAGRAFO '{' . texto '}'
 
-    CONTEUDO  shift, and go to state 32
+    PARAGRAFO  shift, and go to state 13
+    NEGRITO    shift, and go to state 14
+    ITALICO    shift, and go to state 15
+    CONTEUDO   shift, and go to state 17
+
+    $default  reduce using rule 23 (texto)
+
+    texto        go to state 46
+    textoEstilo  go to state 22
 
 
-State 24
+State 32
+
+   32 itensListaOL: ITEM . '{' CONTEUDO '}'
+   33             | ITEM . '{' CONTEUDO '}' itensListaOL
+
+    '{'  shift, and go to state 47
+
+
+State 33
+
+   34 itensListaOL: listas .
+   35             | listas . itensListaOL
+
+    ITEM           shift, and go to state 32
+    INICIOLISTAOL  shift, and go to state 16
+
+    ITEM           [reduce using rule 36 (listaUL)]
+    INICIOLISTAOL  [reduce using rule 36 (listaUL)]
+    FIMLISTAOL     reduce using rule 34 (itensListaOL)
+    FIMLISTAOL     [reduce using rule 36 (listaUL)]
+    $default       reduce using rule 34 (itensListaOL)
+
+    listas        go to state 33
+    listaOL       go to state 24
+    itensListaOL  go to state 48
+    listaUL       go to state 25
+
+
+State 34
+
+   31 listaOL: INICIOLISTAOL itensListaOL . FIMLISTAOL
+
+    FIMLISTAOL  shift, and go to state 49
+
+
+State 35
+
+   24 texto: CONTEUDO texto .
+
+    $default  reduce using rule 24 (texto)
+
+
+State 36
 
     9 principal: INICIO corpoLista FIM .
 
     $default  reduce using rule 9 (principal)
 
 
-State 25
+State 37
 
    11 corpoLista: capitulo corpoLista .
 
     $default  reduce using rule 11 (corpoLista)
 
 
-State 26
+State 38
 
    21 corpo: texto corpo .
 
     $default  reduce using rule 21 (corpo)
 
 
-State 27
+State 39
+
+   26 texto: textoEstilo '{' . CONTEUDO '}' texto
+
+    CONTEUDO  shift, and go to state 50
+
+
+State 40
+
+   22 corpo: listas corpo .
+
+    $default  reduce using rule 22 (corpo)
+
+
+State 41
 
     4 pacotes: PACOTE '{' CONTEUDO . '}' pacotes
     5        | PACOTE '{' CONTEUDO . '}'
 
-    '}'  shift, and go to state 33
+    '}'  shift, and go to state 51
 
 
-State 28
+State 42
 
     6 titulo: TITULO '{' . CONTEUDO '}'
 
-    CONTEUDO  shift, and go to state 34
+    CONTEUDO  shift, and go to state 52
 
 
-State 29
+State 43
 
     7 autor: AUTOR . '{' CONTEUDO '}'
 
-    '{'  shift, and go to state 35
+    '{'  shift, and go to state 53
 
 
-State 30
+State 44
 
     2 configuracoes: classe pacotes titulo autor . data
 
-    DATA  shift, and go to state 36
+    DATA  shift, and go to state 54
 
-    data  go to state 37
+    data  go to state 55
 
 
-State 31
+State 45
 
    13 capitulo: CAPITULO '{' CONTEUDO . '}' corpo secao
    14         | CAPITULO '{' CONTEUDO . '}' secao
 
-    '}'  shift, and go to state 38
+    '}'  shift, and go to state 56
 
 
-State 32
+State 46
 
-   22 texto: PARAGRAFO '{' CONTEUDO . '}'
+   25 texto: PARAGRAFO '{' texto . '}'
 
-    '}'  shift, and go to state 39
+    '}'  shift, and go to state 57
 
 
-State 33
+State 47
+
+   32 itensListaOL: ITEM '{' . CONTEUDO '}'
+   33             | ITEM '{' . CONTEUDO '}' itensListaOL
+
+    CONTEUDO  shift, and go to state 58
+
+
+State 48
+
+   35 itensListaOL: listas itensListaOL .
+
+    $default  reduce using rule 35 (itensListaOL)
+
+
+State 49
+
+   31 listaOL: INICIOLISTAOL itensListaOL FIMLISTAOL .
+
+    $default  reduce using rule 31 (listaOL)
+
+
+State 50
+
+   26 texto: textoEstilo '{' CONTEUDO . '}' texto
+
+    '}'  shift, and go to state 59
+
+
+State 51
 
     4 pacotes: PACOTE '{' CONTEUDO '}' . pacotes
     5        | PACOTE '{' CONTEUDO '}' .
@@ -381,264 +715,416 @@ State 33
 
     $default  reduce using rule 5 (pacotes)
 
-    pacotes  go to state 40
+    pacotes  go to state 60
 
 
-State 34
+State 52
 
     6 titulo: TITULO '{' CONTEUDO . '}'
 
-    '}'  shift, and go to state 41
+    '}'  shift, and go to state 61
 
 
-State 35
+State 53
 
     7 autor: AUTOR '{' . CONTEUDO '}'
 
-    CONTEUDO  shift, and go to state 42
+    CONTEUDO  shift, and go to state 62
 
 
-State 36
+State 54
 
     8 data: DATA . '{' CONTEUDO '}'
 
-    '{'  shift, and go to state 43
+    '{'  shift, and go to state 63
 
 
-State 37
+State 55
 
     2 configuracoes: classe pacotes titulo autor data .
 
     $default  reduce using rule 2 (configuracoes)
 
 
-State 38
+State 56
 
    13 capitulo: CAPITULO '{' CONTEUDO '}' . corpo secao
    14         | CAPITULO '{' CONTEUDO '}' . secao
 
-    SECAO      shift, and go to state 44
+    SECAO          shift, and go to state 64
+    PARAGRAFO      shift, and go to state 13
+    NEGRITO        shift, and go to state 14
+    ITALICO        shift, and go to state 15
+    INICIOLISTAOL  shift, and go to state 16
+    CONTEUDO       shift, and go to state 17
+
+    FIM            reduce using rule 15 (secao)
+    FIM            [reduce using rule 23 (texto)]
+    FIM            [reduce using rule 36 (listaUL)]
+    CAPITULO       reduce using rule 15 (secao)
+    CAPITULO       [reduce using rule 23 (texto)]
+    CAPITULO       [reduce using rule 36 (listaUL)]
+    SECAO          [reduce using rule 23 (texto)]
+    SECAO          [reduce using rule 36 (listaUL)]
+    PARAGRAFO      [reduce using rule 15 (secao)]
+    PARAGRAFO      [reduce using rule 23 (texto)]
+    PARAGRAFO      [reduce using rule 36 (listaUL)]
+    NEGRITO        [reduce using rule 15 (secao)]
+    NEGRITO        [reduce using rule 23 (texto)]
+    NEGRITO        [reduce using rule 36 (listaUL)]
+    ITALICO        [reduce using rule 15 (secao)]
+    ITALICO        [reduce using rule 23 (texto)]
+    ITALICO        [reduce using rule 36 (listaUL)]
+    INICIOLISTAOL  [reduce using rule 15 (secao)]
+    INICIOLISTAOL  [reduce using rule 23 (texto)]
+    INICIOLISTAOL  [reduce using rule 36 (listaUL)]
+    CONTEUDO       [reduce using rule 15 (secao)]
+    CONTEUDO       [reduce using rule 23 (texto)]
+    CONTEUDO       [reduce using rule 36 (listaUL)]
+    $default       reduce using rule 15 (secao)
+
+    secao        go to state 65
+    corpo        go to state 66
+    texto        go to state 21
+    textoEstilo  go to state 22
+    listas       go to state 23
+    listaOL      go to state 24
+    listaUL      go to state 25
+
+
+State 57
+
+   25 texto: PARAGRAFO '{' texto '}' .
+
+    $default  reduce using rule 25 (texto)
+
+
+State 58
+
+   32 itensListaOL: ITEM '{' CONTEUDO . '}'
+   33             | ITEM '{' CONTEUDO . '}' itensListaOL
+
+    '}'  shift, and go to state 67
+
+
+State 59
+
+   26 texto: textoEstilo '{' CONTEUDO '}' . texto
+
     PARAGRAFO  shift, and go to state 13
+    NEGRITO    shift, and go to state 14
+    ITALICO    shift, and go to state 15
+    CONTEUDO   shift, and go to state 17
 
-    PARAGRAFO  [reduce using rule 15 (secao)]
-    $default   reduce using rule 15 (secao)
+    PARAGRAFO  [reduce using rule 23 (texto)]
+    NEGRITO    [reduce using rule 23 (texto)]
+    ITALICO    [reduce using rule 23 (texto)]
+    CONTEUDO   [reduce using rule 23 (texto)]
+    $default   reduce using rule 23 (texto)
 
-    secao  go to state 45
-    corpo  go to state 46
-    texto  go to state 17
-
-
-State 39
-
-   22 texto: PARAGRAFO '{' CONTEUDO '}' .
-
-    $default  reduce using rule 22 (texto)
+    texto        go to state 68
+    textoEstilo  go to state 22
 
 
-State 40
+State 60
 
     4 pacotes: PACOTE '{' CONTEUDO '}' pacotes .
 
     $default  reduce using rule 4 (pacotes)
 
 
-State 41
+State 61
 
     6 titulo: TITULO '{' CONTEUDO '}' .
 
     $default  reduce using rule 6 (titulo)
 
 
-State 42
+State 62
 
     7 autor: AUTOR '{' CONTEUDO . '}'
 
-    '}'  shift, and go to state 47
+    '}'  shift, and go to state 69
 
 
-State 43
+State 63
 
     8 data: DATA '{' . CONTEUDO '}'
 
-    CONTEUDO  shift, and go to state 48
+    CONTEUDO  shift, and go to state 70
 
 
-State 44
+State 64
 
    16 secao: SECAO . '{' CONTEUDO '}' corpo subsecao secao
    17      | SECAO . '{' CONTEUDO '}' subsecao secao
 
-    '{'  shift, and go to state 49
+    '{'  shift, and go to state 71
 
 
-State 45
+State 65
 
    14 capitulo: CAPITULO '{' CONTEUDO '}' secao .
 
     $default  reduce using rule 14 (capitulo)
 
 
-State 46
+State 66
 
    13 capitulo: CAPITULO '{' CONTEUDO '}' corpo . secao
 
-    SECAO  shift, and go to state 44
+    SECAO  shift, and go to state 64
 
     $default  reduce using rule 15 (secao)
 
-    secao  go to state 50
+    secao  go to state 72
 
 
-State 47
+State 67
+
+   32 itensListaOL: ITEM '{' CONTEUDO '}' .
+   33             | ITEM '{' CONTEUDO '}' . itensListaOL
+
+    ITEM           shift, and go to state 32
+    INICIOLISTAOL  shift, and go to state 16
+
+    ITEM           [reduce using rule 36 (listaUL)]
+    INICIOLISTAOL  [reduce using rule 36 (listaUL)]
+    FIMLISTAOL     reduce using rule 32 (itensListaOL)
+    FIMLISTAOL     [reduce using rule 36 (listaUL)]
+    $default       reduce using rule 32 (itensListaOL)
+
+    listas        go to state 33
+    listaOL       go to state 24
+    itensListaOL  go to state 73
+    listaUL       go to state 25
+
+
+State 68
+
+   26 texto: textoEstilo '{' CONTEUDO '}' texto .
+
+    $default  reduce using rule 26 (texto)
+
+
+State 69
 
     7 autor: AUTOR '{' CONTEUDO '}' .
 
     $default  reduce using rule 7 (autor)
 
 
-State 48
+State 70
 
     8 data: DATA '{' CONTEUDO . '}'
 
-    '}'  shift, and go to state 51
+    '}'  shift, and go to state 74
 
 
-State 49
+State 71
 
    16 secao: SECAO '{' . CONTEUDO '}' corpo subsecao secao
    17      | SECAO '{' . CONTEUDO '}' subsecao secao
 
-    CONTEUDO  shift, and go to state 52
+    CONTEUDO  shift, and go to state 75
 
 
-State 50
+State 72
 
    13 capitulo: CAPITULO '{' CONTEUDO '}' corpo secao .
 
     $default  reduce using rule 13 (capitulo)
 
 
-State 51
+State 73
+
+   33 itensListaOL: ITEM '{' CONTEUDO '}' itensListaOL .
+
+    $default  reduce using rule 33 (itensListaOL)
+
+
+State 74
 
     8 data: DATA '{' CONTEUDO '}' .
 
     $default  reduce using rule 8 (data)
 
 
-State 52
+State 75
 
    16 secao: SECAO '{' CONTEUDO . '}' corpo subsecao secao
    17      | SECAO '{' CONTEUDO . '}' subsecao secao
 
-    '}'  shift, and go to state 53
+    '}'  shift, and go to state 76
 
 
-State 53
+State 76
 
    16 secao: SECAO '{' CONTEUDO '}' . corpo subsecao secao
    17      | SECAO '{' CONTEUDO '}' . subsecao secao
 
-    SUBSECAO   shift, and go to state 54
-    PARAGRAFO  shift, and go to state 13
+    SUBSECAO       shift, and go to state 77
+    PARAGRAFO      shift, and go to state 13
+    NEGRITO        shift, and go to state 14
+    ITALICO        shift, and go to state 15
+    INICIOLISTAOL  shift, and go to state 16
+    CONTEUDO       shift, and go to state 17
 
-    PARAGRAFO  [reduce using rule 18 (subsecao)]
-    $default   reduce using rule 18 (subsecao)
+    FIM            reduce using rule 18 (subsecao)
+    FIM            [reduce using rule 23 (texto)]
+    FIM            [reduce using rule 36 (listaUL)]
+    CAPITULO       reduce using rule 18 (subsecao)
+    CAPITULO       [reduce using rule 23 (texto)]
+    CAPITULO       [reduce using rule 36 (listaUL)]
+    SECAO          reduce using rule 18 (subsecao)
+    SECAO          [reduce using rule 23 (texto)]
+    SECAO          [reduce using rule 36 (listaUL)]
+    SUBSECAO       [reduce using rule 23 (texto)]
+    SUBSECAO       [reduce using rule 36 (listaUL)]
+    PARAGRAFO      [reduce using rule 18 (subsecao)]
+    PARAGRAFO      [reduce using rule 23 (texto)]
+    PARAGRAFO      [reduce using rule 36 (listaUL)]
+    NEGRITO        [reduce using rule 18 (subsecao)]
+    NEGRITO        [reduce using rule 23 (texto)]
+    NEGRITO        [reduce using rule 36 (listaUL)]
+    ITALICO        [reduce using rule 18 (subsecao)]
+    ITALICO        [reduce using rule 23 (texto)]
+    ITALICO        [reduce using rule 36 (listaUL)]
+    INICIOLISTAOL  [reduce using rule 18 (subsecao)]
+    INICIOLISTAOL  [reduce using rule 23 (texto)]
+    INICIOLISTAOL  [reduce using rule 36 (listaUL)]
+    CONTEUDO       [reduce using rule 18 (subsecao)]
+    CONTEUDO       [reduce using rule 23 (texto)]
+    CONTEUDO       [reduce using rule 36 (listaUL)]
+    $default       reduce using rule 18 (subsecao)
 
-    subsecao  go to state 55
-    corpo     go to state 56
-    texto     go to state 17
+    subsecao     go to state 78
+    corpo        go to state 79
+    texto        go to state 21
+    textoEstilo  go to state 22
+    listas       go to state 23
+    listaOL      go to state 24
+    listaUL      go to state 25
 
 
-State 54
+State 77
 
    19 subsecao: SUBSECAO . '{' CONTEUDO '}' corpo subsecao
 
-    '{'  shift, and go to state 57
+    '{'  shift, and go to state 80
 
 
-State 55
+State 78
 
    17 secao: SECAO '{' CONTEUDO '}' subsecao . secao
 
-    SECAO  shift, and go to state 44
+    SECAO  shift, and go to state 64
 
     $default  reduce using rule 15 (secao)
 
-    secao  go to state 58
+    secao  go to state 81
 
 
-State 56
+State 79
 
    16 secao: SECAO '{' CONTEUDO '}' corpo . subsecao secao
 
-    SUBSECAO  shift, and go to state 54
+    SUBSECAO  shift, and go to state 77
 
     $default  reduce using rule 18 (subsecao)
 
-    subsecao  go to state 59
+    subsecao  go to state 82
 
 
-State 57
+State 80
 
    19 subsecao: SUBSECAO '{' . CONTEUDO '}' corpo subsecao
 
-    CONTEUDO  shift, and go to state 60
+    CONTEUDO  shift, and go to state 83
 
 
-State 58
+State 81
 
    17 secao: SECAO '{' CONTEUDO '}' subsecao secao .
 
     $default  reduce using rule 17 (secao)
 
 
-State 59
+State 82
 
    16 secao: SECAO '{' CONTEUDO '}' corpo subsecao . secao
 
-    SECAO  shift, and go to state 44
+    SECAO  shift, and go to state 64
 
     $default  reduce using rule 15 (secao)
 
-    secao  go to state 61
+    secao  go to state 84
 
 
-State 60
+State 83
 
    19 subsecao: SUBSECAO '{' CONTEUDO . '}' corpo subsecao
 
-    '}'  shift, and go to state 62
+    '}'  shift, and go to state 85
 
 
-State 61
+State 84
 
    16 secao: SECAO '{' CONTEUDO '}' corpo subsecao secao .
 
     $default  reduce using rule 16 (secao)
 
 
-State 62
+State 85
 
    19 subsecao: SUBSECAO '{' CONTEUDO '}' . corpo subsecao
 
-    PARAGRAFO  shift, and go to state 13
+    PARAGRAFO      shift, and go to state 13
+    NEGRITO        shift, and go to state 14
+    ITALICO        shift, and go to state 15
+    INICIOLISTAOL  shift, and go to state 16
+    CONTEUDO       shift, and go to state 17
 
-    corpo  go to state 63
-    texto  go to state 17
+    FIM            reduce using rule 23 (texto)
+    FIM            [reduce using rule 36 (listaUL)]
+    CAPITULO       reduce using rule 23 (texto)
+    CAPITULO       [reduce using rule 36 (listaUL)]
+    SECAO          reduce using rule 23 (texto)
+    SECAO          [reduce using rule 36 (listaUL)]
+    SUBSECAO       reduce using rule 23 (texto)
+    SUBSECAO       [reduce using rule 36 (listaUL)]
+    PARAGRAFO      [reduce using rule 23 (texto)]
+    PARAGRAFO      [reduce using rule 36 (listaUL)]
+    NEGRITO        [reduce using rule 23 (texto)]
+    NEGRITO        [reduce using rule 36 (listaUL)]
+    ITALICO        [reduce using rule 23 (texto)]
+    ITALICO        [reduce using rule 36 (listaUL)]
+    INICIOLISTAOL  [reduce using rule 23 (texto)]
+    INICIOLISTAOL  [reduce using rule 36 (listaUL)]
+    CONTEUDO       [reduce using rule 23 (texto)]
+    CONTEUDO       [reduce using rule 36 (listaUL)]
+    $default       reduce using rule 23 (texto)
+
+    corpo        go to state 86
+    texto        go to state 21
+    textoEstilo  go to state 22
+    listas       go to state 23
+    listaOL      go to state 24
+    listaUL      go to state 25
 
 
-State 63
+State 86
 
    19 subsecao: SUBSECAO '{' CONTEUDO '}' corpo . subsecao
 
-    SUBSECAO  shift, and go to state 54
+    SUBSECAO  shift, and go to state 77
 
     $default  reduce using rule 18 (subsecao)
 
-    subsecao  go to state 64
+    subsecao  go to state 87
 
 
-State 64
+State 87
 
    19 subsecao: SUBSECAO '{' CONTEUDO '}' corpo subsecao .
 

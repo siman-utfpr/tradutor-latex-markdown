@@ -36,6 +36,7 @@ No* alocarNo(char* valor, int tipo) {
   novoNo->prox = NULL;
   novoNo->tipo = tipo;
   novoNo->value = malloc(strlen(valor));
+  novoNo->numeroEspacos = 0;
   strcpy(novoNo->value, valor);
   if (novoNo == NULL) {
     yyerror("Erro de alocação.");
@@ -56,27 +57,53 @@ void inserirNo(No** no, No* noInserido, int tipo) {
   }
 }
 
+void inserirEspacosLista(No** no, int numeroEspacos) {
+  No* noAux = (*no)->child->child;
+  while (noAux != NULL) {
+    noAux->numeroEspacos = numeroEspacos;
+    noAux = noAux->prox;
+  }
+}
+
 void imprimirLista(No* no, FILE* arquivoSaida) {
   while (no != NULL) {
     switch (no->tipo) {
       case C_TITULO:
-        fprintf(arquivoSaida, "# %s\n", no->value);
+        fprintf(arquivoSaida, "# %s", no->value);
         break;
       case C_AUTOR:
-        fprintf(arquivoSaida, "Autor do texto: %s\n", no->value);
+        fprintf(arquivoSaida, "\nAutor do texto: %s", no->value);
         break;
       case C_PARAGRAFO:
-        fprintf(arquivoSaida, "   %s\n", no->value);
+        fprintf(arquivoSaida, "\n  ");
+        imprimirLista(no->child, arquivoSaida);
+        no->child = NULL;
+        fprintf(arquivoSaida, "\n");
+        break;
+      case C_TEXTO:
+        fprintf(arquivoSaida, "%s", no->value);
+        break;
+      case C_NEGRITO:
+        fprintf(arquivoSaida, "**%s**", no->value);
+        break;
+      case C_ITALICO:
+        fprintf(arquivoSaida, "*%s*", no->value);
         break;
       case C_CAPITULO:
-        fprintf(arquivoSaida, "## %s\n", no->value);
+        fprintf(arquivoSaida, "\n## %s", no->value);
         break;
       case C_SECAO:
-        fprintf(arquivoSaida, "### %s\n", no->value);
+        fprintf(arquivoSaida, "\n### %s", no->value);
         break;
       case C_SUBSECAO:
-        //printf("Valor subseção: %s\n", no->value);
-        fprintf(arquivoSaida, "#### %s\n", no->value);
+        fprintf(arquivoSaida, "\n#### %s", no->value);
+        break;
+      case C_LISTAOL:
+        fprintf(arquivoSaida, "\n");
+        for (int i = 0; i < no->numeroEspacos; i++) {
+          fprintf(arquivoSaida, " ");
+        }
+        fprintf(arquivoSaida, "1. %s", no->value);
         break;
       default:
         //printf("Ignorado: %s\n", no->value);

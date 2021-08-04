@@ -5,7 +5,7 @@
 #include <string.h>
 
 int yylex();
-
+int numeroEspacos = 0;
 %}
 
 %union{
@@ -14,13 +14,15 @@ int yylex();
 }
 
 %token TITULO CLASSE PACOTE AUTOR DATA
-%token INICIO FIM CAPITULO SECAO SUBSECAO PARAGRAFO
+%token INICIO FIM CAPITULO SECAO SUBSECAO PARAGRAFO NEGRITO ITALICO 
+%token ITEM INICIOLISTAUL INICIOLISTAOL FIMLISTAUL FIMLISTAOL
 %token <conteudo>  CONTEUDO
 %start documento
 
 // %type <conteudo> secao capitulo subsecao corpo texto corpoLista
 %type <lista> documento configuracoes principal titulo classe pacotes autor data
-%type <lista> corpoLista capitulo secao subsecao corpo texto
+%type <lista> corpoLista capitulo secao subsecao corpo texto textoEstilo 
+%type <lista> listas listaUL listaOL itensListaUL itensListaOL
 %%
 
 documento: configuracoes principal {  
@@ -70,8 +72,6 @@ corpoLista:  {$$ = NULL; }
   | capitulo corpoLista{ 
     $$ = alocarNo("CORPO LISTA: ", C_NULO); 
     inserirNo(&($$), $1, CHILD); 
-    //inserirNo(&($1), $2, CHILD);
-    //inserirNo(&($2), $3, CHILD);
     inserirNo(&($$), $2, PROX);
   }
   | corpo {inserirNo(&($$), $1, CHILD);}
@@ -102,15 +102,67 @@ secao: {$$ = NULL;}
 subsecao: {$$ = NULL;}
   | SUBSECAO '{' CONTEUDO '}' corpo subsecao {
     $$ = alocarNo($3, C_SUBSECAO);
-    inserirNo(&($$), $6, PROX);
-    inserirNo(&($$), $5, CHILD); 
+    inserirNo(&($$), $6, PROX);  
+    inserirNo(&($$), $5, CHILD);
+    }  
+  ;
+
+corpo: texto {$$ = alocarNo("", C_NULO); inserirNo(&($$), $1, CHILD);}
+  | texto corpo {$$ = alocarNo("", C_NULO); inserirNo(&($$), $1, CHILD); inserirNo(&($$), $2, PROX); }
+  | listas corpo {
+    $$ = alocarNo("", C_NULO); 
+    inserirNo(&($$), $1, CHILD); 
+    inserirNo(&($$), $2, PROX); 
+    numeroEspacos = 0;
     }
   ;
 
-corpo: texto {$$ = alocarNo("CORPO: ", C_NULO); inserirNo(&($$), $1, CHILD);}
-  | texto corpo {$$ = alocarNo("CORPO: ", C_NULO); inserirNo(&($$), $1, CHILD); inserirNo(&($$), $2, PROX); }
+texto: {$$ = NULL;}
+  | CONTEUDO texto { $$ = alocarNo($1, C_TEXTO); inserirNo(&($$), $2, PROX); }
+  | PARAGRAFO '{' texto '}' { $$ = alocarNo("", C_PARAGRAFO); inserirNo(&($$), $3, CHILD); }
+  | textoEstilo '{' CONTEUDO '}' texto { $$ = alocarNo($3, $1->tipo); inserirNo(&($$), $5, PROX);}
   ;
 
-texto: PARAGRAFO '{' CONTEUDO '}' { $$ = alocarNo($3, C_PARAGRAFO);}
+textoEstilo: NEGRITO {$$ = alocarNo("", C_NEGRITO);  }
+  | ITALICO {$$ = alocarNo("", C_ITALICO);}
   ;
+
+listas: listaOL {$$ = $1;}
+  | listaUL {$$ = $1; }
+  ;
+
+listaOL: INICIOLISTAOL itensListaOL FIMLISTAOL {
+  $$ = alocarNo("", C_NULO);
+  inserirNo(&($$), $2, CHILD);
+  }
+  ;
+
+itensListaOL: ITEM '{' CONTEUDO '}' {
+  $$ = alocarNo("", C_NULO);  
+  No *noTemp = alocarNo($3, C_LISTAOL);
+  inserirNo(&($$), noTemp, CHILD);
+  }
+  | ITEM '{' CONTEUDO '}' itensListaOL {
+    $$ = alocarNo("", C_NULO); 
+    No *noTemp = alocarNo($3, C_LISTAOL);
+    inserirNo(&($$), noTemp, CHILD);
+    inserirNo(&(noTemp), $5, PROX);
+  }
+  | listas {
+    $$ = alocarNo("", C_NULO);
+    numeroEspacos += 2;
+    inserirNo(&($$), $1, PROX);
+    inserirEspacosLista(&($1), numeroEspacos);
+  }
+  | listas itensListaOL {
+    $$ = alocarNo("", C_NULO); 
+    inserirNo(&($$), $1, PROX);
+    inserirNo(&($1), $2, PROX);
+    numeroEspacos += 2;
+    inserirEspacosLista(&($1), numeroEspacos);
+  }
+  ;
+
+listaUL: 
+;
 %%

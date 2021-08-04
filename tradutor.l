@@ -5,18 +5,19 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-/* {CLASSE} {salvarConteudo(&yylval.conteudo, yytext); return CLASSE;}
-{PACOTE} { salvarConteudo(&yylval.conteudo, yytext); return PACOTE;}
-{TITULO} {salvarConteudo(&yylval.conteudo, yytext); return TITULO;}
-{AUTOR} {salvarConteudo(&yylval.conteudo, yytext); return AUTOR;}
-{DATA} {salvarConteudo(&yylval.conteudo, yytext); return DATA;} 
-*/
-
 %}
 
 INICIO \\begin\{document\}
 
 FIM \\end\{document\}
+
+INICIOLISTAUL \\begin\{itemize\}
+
+FIMLISTAUL \\end\{itemize\}
+
+INICIOLISTAOL \\begin\{enumerate\}
+
+FIMLISTAOL \\end\{enumerate\}
 
 CAPITULO \\chapter
 
@@ -25,6 +26,12 @@ PARAGRAFO \\paragraph
 SECAO \\section
 
 SUBSECAO \\subsection
+
+NEGRITO \\textbf
+
+ITALICO \\textit
+
+ITEM \\item
 
 CONTEUDO [a-zA-Z0-9 \n]+
 
@@ -42,6 +49,12 @@ DATA   \\date
 [\t\n] 
 {INICIO} {return INICIO;}
 {FIM} {return FIM;}
+{INICIOLISTAUL} {return INICIOLISTAUL;}
+{FIMLISTAUL} {return FIMLISTAUL;}
+{INICIOLISTAOL} {return INICIOLISTAOL;}
+{FIMLISTAOL} {return FIMLISTAOL;}
+{INICIO} {return INICIO;}
+{FIM} {return FIM;}
 {CAPITULO} {return CAPITULO;}
 {SECAO} {return SECAO;}
 {SUBSECAO} {return SUBSECAO;}
@@ -50,7 +63,10 @@ DATA   \\date
 {CLASSE} {return CLASSE;}
 {PACOTE} {return PACOTE;}
 {AUTOR} {return AUTOR;}
+{NEGRITO} {return NEGRITO;}
+{ITALICO} {return ITALICO;}
 {DATA} {return DATA;}
+{ITEM} {return ITEM;}
 {CONTEUDO} {salvarConteudo(&yylval.conteudo, yytext); return CONTEUDO;}
 "{" |
 "}" {return yytext[0];}

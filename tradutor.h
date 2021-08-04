@@ -10,19 +10,21 @@
 #define C_PARAGRAFO 4
 #define C_NEGRITO 5
 #define C_ITALICO 6
-#define C_LISTAU 7
-#define C_LISTAO 8
+#define C_LISTAUL 7
+#define C_LISTAOL 8
 #define C_CLASSE 9
 #define C_PACOTE 10
 #define C_AUTOR 11
 #define C_DATA 12
 #define C_TITULO 13
+#define C_TEXTO 14
 
 struct No {
   char *value;
   struct No *child;
   struct No *prox;
   int tipo;
+  int numeroEspacos;
 };
 
 typedef struct No No;
@@ -41,3 +43,5 @@ void imprimirLista(No *, FILE *);
 void salvarConteudo(char **, char *);
 
 void yyerror(char *s, ...);
+
+void inserirEspacosLista(No **no, int numeroEspacos);

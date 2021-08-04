@@ -5,7 +5,6 @@
 #include <string.h>
 
 int yylex();
-int numeroEspacos = 0;
 %}
 
 %union{
@@ -19,30 +18,34 @@ int numeroEspacos = 0;
 %token <conteudo>  CONTEUDO
 %start documento
 
-// %type <conteudo> secao capitulo subsecao corpo texto corpoLista
-%type <lista> documento configuracoes principal titulo classe pacotes autor data
+%type <lista> documento configuracoes identificacao principal titulo classe pacotes autor data
 %type <lista> corpoLista capitulo secao subsecao corpo texto textoEstilo 
-%type <lista> listas listaUL listaOL itensListaUL itensListaOL
+%type <lista> listas listaUL listaOL
 %%
 
-documento: configuracoes principal {  
-  $$ = alocarNo("DOCUMENTO", C_NULO);
-  inserirNo(&($$), $1, CHILD);
-  inserirNo(&($1), $2, PROX);
+documento: configuracoes identificacao principal {  
   FILE *arquivoSaida;
   arquivoSaida = fopen("saida/teste1.md", "w");
-  imprimirLista($$, arquivoSaida);
+  imprimirLista($2, arquivoSaida);
+  imprimirLista($3, arquivoSaida);
+  imprimirLista(alocarNo("\n***\n", C_TEXTO), arquivoSaida);
+  imprimirLista($1, arquivoSaida);
   fclose(arquivoSaida);
 }
   ;
 
-configuracoes: classe pacotes titulo autor data {
-  $$ = alocarNo("CONFIGURAÇÕES", C_NULO);
+configuracoes: classe pacotes {
+  $$ = alocarNo("Configurações do arquivo Latex", C_NEGRITO);
+  inserirNo(&($$), $1, CHILD);
+  inserirNo(&($1), $2, PROX);
+}
+  ;
+
+identificacao: autor data titulo {
+  $$ = alocarNo("Identificação", C_ITALICO);     
   inserirNo(&($$), $1, CHILD);
   inserirNo(&($1), $2, PROX);
   inserirNo(&($2), $3, PROX);
-  inserirNo(&($3), $4, PROX);
-  inserirNo(&($4), $5, PROX);
 }
   ;
 
@@ -63,14 +66,14 @@ data: DATA '{' CONTEUDO '}' { $$ = alocarNo($3, C_DATA);}
   ;
 
 principal: INICIO corpoLista FIM {
-  $$ = alocarNo("PRINCIPAL: ", C_NULO);
+  $$ = alocarNo("", C_NULO);
   inserirNo(&($$), $2, CHILD);
   }
   ;
 
 corpoLista:  {$$ = NULL; }
   | capitulo corpoLista{ 
-    $$ = alocarNo("CORPO LISTA: ", C_NULO); 
+    $$ = alocarNo("", C_NULO); 
     inserirNo(&($$), $1, CHILD); 
     inserirNo(&($$), $2, PROX);
   }
@@ -111,8 +114,9 @@ corpo: texto {$$ = alocarNo("", C_NULO); inserirNo(&($$), $1, CHILD);}
   | texto corpo {$$ = alocarNo("", C_NULO); inserirNo(&($$), $1, CHILD); inserirNo(&($$), $2, PROX); }
   | listas corpo {
     $$ = alocarNo("", C_NULO); 
-    inserirNo(&($$), $1, CHILD); 
-    inserirNo(&($$), $2, PROX); 
+    inserirNo(&($$), $1, CHILD);    
+    inserirNo(&($$), $2, PROX);
+    inserirEspacosLista(&($1->child), 0);
     }
   ;
 
@@ -126,42 +130,38 @@ textoEstilo: NEGRITO {$$ = alocarNo("", C_NEGRITO);  }
   | ITALICO {$$ = alocarNo("", C_ITALICO);}
   ;
 
-listas: listaOL {$$ = $1;}
-  | listaUL {$$ = $1; }
-  ;
-
-listaOL: INICIOLISTAOL itensListaOL FIMLISTAOL {
+listas: INICIOLISTAOL listaOL FIMLISTAOL {
   $$ = alocarNo("", C_NULO);
   inserirNo(&($$), $2, CHILD);
   }
-  ;
-
-itensListaOL: ITEM '{' CONTEUDO '}' {
-  $$ = alocarNo("", C_NULO); 
-  No *noTemp = alocarNo($3, C_LISTAOL);
-  inserirNo(&($$), noTemp, PROX);
-  }
-  | ITEM '{' CONTEUDO '}' itensListaOL {
-    $$ = alocarNo("", C_NULO); 
-    No *noTemp = alocarNo($3, C_LISTAOL);
-    inserirNo(&($$), noTemp, PROX);
-    inserirNo(&(noTemp), $5, PROX);
-  }
-  | listas {
+  | INICIOLISTAUL listaUL FIMLISTAUL {
     $$ = alocarNo("", C_NULO);
-    inserirEspacosLista(&($1), numeroEspacos);
-    numeroEspacos += 2;
-    inserirNo(&($$), $1, PROX);
-  }
-  | listas itensListaOL {
-    $$ = alocarNo("", C_NULO); 
-    inserirNo(&($$), $1, PROX);
-    inserirNo(&($1), $2, PROX);
-    inserirEspacosLista(&($1), numeroEspacos);
-    numeroEspacos += 2;
+    inserirNo(&($$), $2, CHILD);
   }
   ;
 
-listaUL: 
+listaOL: ITEM '{' CONTEUDO '}' { $$ = alocarNo($3, C_LISTAOL);  }
+  | ITEM '{' CONTEUDO '}' listaOL {
+    $$ = alocarNo($3, C_LISTAOL);
+    inserirNo(&($$), $5, PROX);
+  }
+  | listas { $$ = $1;  }
+  | listas listaOL {
+    $$ = $1;   
+    inserirNo(&($1), $2, PROX);  
+  }
+  ;
+
+listaUL: ITEM '{' CONTEUDO '}' { $$ = alocarNo($3, C_LISTAUL);  }
+  | ITEM '{' CONTEUDO '}' listaUL {
+    $$ = alocarNo($3, C_LISTAUL);
+    inserirNo(&($$), $5, PROX);
+  }
+  | listas { $$ = $1;  }
+  | listas listaUL {
+    $$ = $1;   
+    inserirNo(&($1), $2, PROX);  
+  }
+  ;
 ;
 %%

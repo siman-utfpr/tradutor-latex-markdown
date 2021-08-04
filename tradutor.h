@@ -45,3 +45,5 @@ void salvarConteudo(char **, char *);
 void yyerror(char *s, ...);
 
 void inserirEspacosLista(No **no, int numeroEspacos);
+
+void impressaoSecundaria(No *no);

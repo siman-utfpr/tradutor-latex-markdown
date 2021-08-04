@@ -58,9 +58,11 @@ void inserirNo(No** no, No* noInserido, int tipo) {
 }
 
 void inserirEspacosLista(No** no, int numeroEspacos) {
-  No* noAux = (*no)->child;
+  if ((*no) == NULL) return;
+  No* noAux = (*no);
   while (noAux != NULL) {
     noAux->numeroEspacos = numeroEspacos;
+    inserirEspacosLista(&(noAux->child), numeroEspacos + 2);
     noAux = noAux->prox;
   }
 }
@@ -68,11 +70,20 @@ void inserirEspacosLista(No** no, int numeroEspacos) {
 void imprimirLista(No* no, FILE* arquivoSaida) {
   while (no != NULL) {
     switch (no->tipo) {
+      case C_CLASSE:
+        fprintf(arquivoSaida, "\n\nClasse do arquivo: %s\n", no->value);
+        break;
+      case C_PACOTE:
+        fprintf(arquivoSaida, "\nPacote utilizado: %s\n", no->value);
+        break;
+      case C_DATA:
+        fprintf(arquivoSaida, "\nData: %s\n", no->value);
+        break;
       case C_TITULO:
-        fprintf(arquivoSaida, "# %s", no->value);
+        fprintf(arquivoSaida, "\n# %s", no->value);
         break;
       case C_AUTOR:
-        fprintf(arquivoSaida, "\nAutor do texto: %s", no->value);
+        fprintf(arquivoSaida, "\n\nAutor do texto: %s\n", no->value);
         break;
       case C_PARAGRAFO:
         fprintf(arquivoSaida, "\n  ");
@@ -105,12 +116,27 @@ void imprimirLista(No* no, FILE* arquivoSaida) {
         }
         fprintf(arquivoSaida, "1. %s", no->value);
         break;
+      case C_LISTAUL:
+        fprintf(arquivoSaida, "\n");
+        for (int i = 0; i < no->numeroEspacos; i++) {
+          fprintf(arquivoSaida, " ");
+        }
+        fprintf(arquivoSaida, "- %s", no->value);
+        break;
       default:
         //printf("Ignorado: %s\n", no->value);
         break;
     }
     //printf("Valor do nó: %s\n", no->value);
     imprimirLista(no->child, arquivoSaida);
+    no = no->prox;
+  }
+}
+
+void impressaoSecundaria(No* no) {
+  while (no != NULL) {
+    impressaoSecundaria(no->child);
+    printf("%s\n", no->value);
     no = no->prox;
   }
 }

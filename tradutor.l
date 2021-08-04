@@ -33,7 +33,7 @@ ITALICO \\textit
 
 ITEM \\item
 
-CONTEUDO [a-zA-Z0-9 \n]+
+CONTEUDO [a-zA-Z0-9 \n\.\'\"!\?,=-]+
 
 CLASSE \\documentclass(\[.*\])?
 
@@ -69,5 +69,4 @@ DATA   \\date
 "{" |
 "}" {return yytext[0];}
 . {printf("Não reconhecido: %s\n", yytext); }
-
 %%
